@@ -6,10 +6,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const Header = ({ userImage }) => {
   return (
     <View style={styles.header}>
-      <TouchableOpacity style={styles.menuIcon}>
-        <Icon name="bars" size={30} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Trang Chủ</Text>
+      <View style={{flexDirection:'row'}}>
+        <TouchableOpacity style={styles.menuIcon}>
+          <Icon name="bars" size={30} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Trang Chủ</Text> 
+      </View>
+      
       <Image source={userImage} style={styles.avatar} />
     </View>
   );
@@ -28,11 +31,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    flex: 1,
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-    textAlign: 'center',
+    marginTop:10,
+    marginLeft:15
   },
   avatar: {
     width: 40,

@@ -1,14 +1,14 @@
-// HomeApp.js
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Alert, Dimensions } from 'react-native';
+import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Header from './Header';
 import InitialModal from './InitialModal';
 import ProfileModal from './ProfileModal';
+import Leaderboard from './Leaderboard';
 
-const HomeApp = () => {
+const HomeApp = ({ navigation }) => {
   const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
   const [isInitialModalVisible, setInitialModalVisible] = useState(false);
   const [isProfileModalVisible, setProfileModalVisible] = useState(false);
@@ -27,7 +27,8 @@ const HomeApp = () => {
         const userRef = firestore().collection('user').doc(user.uid);
         const doc = await userRef.get();
         if (doc.exists) {
-          setUserImage({ uri: doc.data().profileImage } || require('../material/image/avatar/user_icon.png'));
+          const profileImageUri = doc.data().profileImage;
+          setUserImage(profileImageUri ? { uri: profileImageUri } : require('../material/image/avatar/user_icon.png'));
         } else {
           setInitialModalVisible(true);
         }
@@ -71,14 +72,14 @@ const HomeApp = () => {
       phoneNumber,
       profileImage,
     })
-    .then(() => {
-      Alert.alert('Thông báo', 'Hồ sơ đã được tạo thành công');
-      setProfileModalVisible(false);
-      setUserImage(profileImage ? { uri: profileImage } : require('../material/image/avatar/user_icon.png'));
-    })
-    .catch(error => {
-      Alert.alert('Lỗi', 'Không thể lưu hồ sơ: ' + error.message);
-    });
+      .then(() => {
+        Alert.alert('Thông báo', 'Hồ sơ đã được tạo thành công');
+        setProfileModalVisible(false);
+        setUserImage(profileImage ? { uri: profileImage } : require('../material/image/avatar/user_icon.png'));
+      })
+      .catch(error => {
+        Alert.alert('Lỗi', 'Không thể lưu hồ sơ: ' + error.message);
+      });
   };
 
   const fetchBannerImage = async () => {
@@ -99,6 +100,11 @@ const HomeApp = () => {
       console.error('Error fetching banner image: ', error);
     }
   };
+
+  const handlePress = (screenName) => {
+    navigation.navigate(screenName);
+  };
+
 
   return (
     <View style={styles.container}>
@@ -124,6 +130,50 @@ const HomeApp = () => {
         handleSelectImage={handleSelectImage}
         handleSaveProfile={handleSaveProfile}
       />
+      <View >
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Bảng Xếp Hạng</Text>
+        <View style={{ width: "100%", height: 200, backgroundColor: '#D5F8D5', justifyContent: 'center' }}>
+          <Leaderboard />
+        </View>
+      </View>
+      <View >
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Hoạt Động</Text>
+      </View>
+      <View style={styles.container_item}>
+        <View>
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen1')}>
+              <Image source={require('../material/image/item/ty.png')} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>Thiền Và YoGa</Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen2')}>
+              <Image source={require('../material/image/item/sk.png')} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>Tinh Thần</Text>
+          </View >
+        </View>
+        <View>
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen1')}>
+              <Image source={require('../material/image/item/qltt.png')} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>Sức khỏe</Text>
+          </View>
+
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen2')}>
+              <Image source={require('../material/image/item/db.png')} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: 'bold', color: 'black' }}>Vận Động</Text>
+          </View >
+        </View>
+
+
+      </View>
+
+
     </View>
   );
 };
@@ -138,5 +188,27 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: Dimensions.get('window').width,
     height: 250,
+  },
+
+  container_item: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  button: {
+    width: 160,
+    height: 160,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#90EE90',
+    borderRadius: 10
+  },
+  image: {
+    width: 160,
+    height: 160,
+    borderRadius: 10,
   },
 });
