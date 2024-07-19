@@ -1,12 +1,10 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, TextInput, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, TextInput, Alert, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import ImagePicker from 'react-native-image-picker';
 import LottieView from 'lottie-react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
-
 
 const HomeApp = () => {
   const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
@@ -18,6 +16,7 @@ const HomeApp = () => {
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [bannerImage, setBannerImage] = useState(null);
 
   useEffect(() => {
     const checkUserProfile = async () => {
@@ -32,7 +31,7 @@ const HomeApp = () => {
         }
       }
     };
-
+    fetchBannerImage();
     checkUserProfile();
   }, []);
 
@@ -52,7 +51,6 @@ const HomeApp = () => {
       }
     });
   };
-  
 
   const handleSaveProfile = () => {
     if (!fullName || !age || !gender || !address) {
@@ -81,6 +79,25 @@ const HomeApp = () => {
     });
   };
 
+  const fetchBannerImage = async () => {
+    try {
+      const bannerRef = firestore().collection('banners').doc('5aUsWibhmSEKChT7180o'); // Sử dụng bannerId của bạn
+      const doc = await bannerRef.get();
+      if (doc.exists) {
+        const data = doc.data();
+        if (data && data.url_image) {
+          setBannerImage(data.url_image);
+        } else {
+          console.error('No url_image field found in the document');
+        }
+      } else {
+        console.error('Document does not exist');
+      }
+    } catch (error) {
+      console.error('Error fetching banner image: ', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -90,7 +107,9 @@ const HomeApp = () => {
         <Text style={styles.title}>Trang Chủ</Text>
         <Image source={userImage} style={styles.avatar} />
       </View>
-
+      {bannerImage && (
+        <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
+      )}
       <Modal
         animationType="slide"
         transparent={true}
@@ -188,11 +207,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#D5F8D5',
     elevation: 2,
   },
   menuIcon: {
     padding: 10,
+  },
+  bannerImage: {
+    width: Dimensions.get('window').width,
+    height: 250,
   },
   title: {
     flex: 1,
