@@ -148,7 +148,7 @@ const HomeApp = ({ navigation }) => {
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Thiền Và YoGa</Text>
           </View>
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen2')}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Mental')}>
               <Image source={require('../material/image/item/sk.png')} />
             </TouchableOpacity>
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Tinh Thần</Text>
