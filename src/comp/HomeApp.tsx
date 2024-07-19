@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, TextInput, Alert, Dimensions } from 'react-native';
+// HomeApp.js
 import React, { useEffect, useState } from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import firestore from '@react-native-firebase/firestore';
+import { View, Image, StyleSheet, Alert, Dimensions } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import LottieView from 'lottie-react-native';
+import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Header from './Header';
+import InitialModal from './InitialModal';
+import ProfileModal from './ProfileModal';
 
 const HomeApp = () => {
   const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
@@ -100,97 +102,28 @@ const HomeApp = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuIcon}>
-          <Icon name="bars" size={30} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Trang Chủ</Text>
-        <Image source={userImage} style={styles.avatar} />
-      </View>
+      <Header userImage={userImage} />
       {bannerImage && (
         <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
       )}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isInitialModalVisible}
-        onRequestClose={() => setInitialModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <LottieView
-              source={require('../material/animation/happy.json')}
-              autoPlay
-              loop
-              style={styles.modalAnimation}
-            />
-            <Text style={styles.modalText}>Bạn là người dùng mới</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={handleCreateProfile}
-            >
-              <Text style={styles.closeButtonText}>Tạo Hồ Sơ</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isProfileModalVisible}
-        onRequestClose={() => setProfileModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Tạo Hồ Sơ</Text>
-            <TextInput
-              placeholder='Họ và Tên'
-              value={fullName}
-              onChangeText={setFullName}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder='Tuổi'
-              value={age}
-              onChangeText={setAge}
-              keyboardType='numeric'
-              style={styles.input}
-            />
-            <TextInput
-              placeholder='Giới Tính'
-              value={gender}
-              onChangeText={setGender}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder='Nơi ở hiện tại'
-              value={address}
-              onChangeText={setAddress}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder='Số điện thoại (tuỳ chọn)'
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType='numeric'
-              style={styles.input}
-            />
-            <TouchableOpacity onPress={handleSelectImage} style={styles.selectImageButton}>
-              <Text style={styles.selectImageButtonText}>Chọn Ảnh</Text>
-            </TouchableOpacity>
-            {profileImage && (
-              <Image source={{ uri: profileImage }} style={styles.selectedImage} />
-            )}
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={handleSaveProfile}
-            >
-              <Text style={styles.saveButtonText}>Xác Nhận</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <InitialModal isVisible={isInitialModalVisible} onClose={handleCreateProfile} />
+      <ProfileModal
+        isVisible={isProfileModalVisible}
+        onClose={() => setProfileModalVisible(false)}
+        fullName={fullName}
+        setFullName={setFullName}
+        age={age}
+        setAge={setAge}
+        gender={gender}
+        setGender={setGender}
+        address={address}
+        setAddress={setAddress}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        profileImage={profileImage}
+        handleSelectImage={handleSelectImage}
+        handleSaveProfile={handleSaveProfile}
+      />
     </View>
   );
 };
@@ -202,104 +135,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor: '#D5F8D5',
-    elevation: 2,
-  },
-  menuIcon: {
-    padding: 10,
-  },
   bannerImage: {
     width: Dimensions.get('window').width,
     height: 250,
-  },
-  title: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-    textAlign: 'center',
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#ddd',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: 300,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalAnimation: {
-    width: 150,
-    height: 150,
-  },
-  modalText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 20,
-  },
-  closeButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    width: '100%',
-  },
-  selectImageButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 10,
-  },
-  selectImageButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  selectedImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    marginVertical: 10,
-  },
-  saveButton: {
-    backgroundColor: '#28a745',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  saveButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
