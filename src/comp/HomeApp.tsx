@@ -5,6 +5,8 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import ImagePicker from 'react-native-image-picker';
 import LottieView from 'lottie-react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+
 
 const HomeApp = () => {
   const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
@@ -40,16 +42,17 @@ const HomeApp = () => {
   };
 
   const handleSelectImage = () => {
-    ImagePicker.launchImageLibrary({}, (response) => {
+    launchImageLibrary({}, (response) => {
       if (response.didCancel) {
         console.log('Người dùng hủy chọn ảnh');
-      } else if (response.error) {
-        console.log('Lỗi chọn ảnh: ', response.error);
+      } else if (response.errorCode) {
+        console.log('Lỗi chọn ảnh: ', response.errorMessage);
       } else {
-        setProfileImage(response.uri);
+        setProfileImage(response.assets[0].uri);
       }
     });
   };
+  
 
   const handleSaveProfile = () => {
     if (!fullName || !age || !gender || !address) {
