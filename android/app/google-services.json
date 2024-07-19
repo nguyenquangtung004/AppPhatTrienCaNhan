@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "843833172777",
+    "project_id": "phattriencanhan-ed74b",
+    "storage_bucket": "phattriencanhan-ed74b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:843833172777:android:339127554b97523e398d38",
+        "android_client_info": {
+          "package_name": "com.assgimentgd1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH-IbD8gBHVYnKuvIQori786sUogk9sK8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
