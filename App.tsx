@@ -3,12 +3,13 @@ import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import store from './src/redux/store';
-import WelcomeApp from './src/comp/WelcomeApp';
-import LoginApp from './src/comp/LoginApp';
-import RegisterApp from './src/comp/RegisterApp';
+import WelcomeApp from './src/Screen/WelcomeApp';
+import LoginApp from './src/Screen/LoginApp';
+import RegisterApp from './src/Screen/RegisterApp';
 import HomeApp from './src/comp/HomeApp';
 import ProfileApp from './src/comp/ProfileApp';
 import MentalManagementScreen from './src/comp/MentalManagement'; // Import new screen component
+import StepCounterScreen from './src/comp/StepCounterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ const App = () => {
           <Stack.Screen name="Home" component={HomeApp} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={ProfileApp} options={{ headerShown: false }} />
           <Stack.Screen name="Mental" component={MentalManagementScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Steps" component={StepCounterScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

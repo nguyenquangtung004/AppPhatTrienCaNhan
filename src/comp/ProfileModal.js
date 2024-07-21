@@ -1,4 +1,3 @@
-// ProfileModal.js
 import React from 'react';
 import { View, Text, TouchableOpacity, TextInput, Image, Modal, StyleSheet, Alert } from 'react-native';
 
