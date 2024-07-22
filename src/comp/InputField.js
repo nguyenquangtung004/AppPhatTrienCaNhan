@@ -2,7 +2,16 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const InputField = ({ iconName, placeholder, value, onChangeText, secureTextEntry, onTogglePasswordVisibility, error }) => {
+// Component InputField để tạo ô nhập liệu
+const InputField = ({ 
+  iconName, // Tên của icon hiển thị bên trái ô nhập liệu
+  placeholder, // Nội dung gợi ý cho ô nhập liệu
+  value, // Giá trị hiện tại của ô nhập liệu
+  onChangeText, // Hàm để thay đổi giá trị của ô nhập liệu
+  secureTextEntry, // Trạng thái ẩn/hiện nội dung nhập vào
+  onTogglePasswordVisibility, // Hàm để thay đổi trạng thái ẩn/hiện mật khẩu
+  error // Thông báo lỗi
+}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{placeholder}:</Text>
@@ -26,6 +35,7 @@ const InputField = ({ iconName, placeholder, value, onChangeText, secureTextEntr
   );
 };
 
+// Định nghĩa các kiểu dáng cho component
 const styles = StyleSheet.create({
   container: {
     marginBottom: 15,

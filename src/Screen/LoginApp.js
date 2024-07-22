@@ -1,11 +1,12 @@
-import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Modal } from 'react-native';
+import { Alert, Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import LottieView from 'lottie-react-native';
 import { useNavigation } from '@react-navigation/native';
-import { auth } from '../firebaseConfig'; // Cấu hình Firebase
+import { auth } from '../firebaseConfig';
 import firestore from '@react-native-firebase/firestore';
+import CustomTextInput from '../comp/CustomTextInput';
+import CustomButton from '../comp/CustomButton';
+import CustomModal from '../comp/CustomModal';
 
 const LoginApp = () => {
   const [username, setUsername] = useState('');
@@ -15,6 +16,8 @@ const LoginApp = () => {
   const [isButtonHoveredRight, setIsButtonHoveredRight] = useState(false);
   const [isButtonHoveredLeft, setIsButtonHoveredLeft] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation();
 
   const handleRememberPassword = () => {
@@ -22,45 +25,56 @@ const LoginApp = () => {
   };
 
   const handleLogin = () => {
-    if (!username || !password) {
-      Alert.alert('Lỗi', 'Vui lòng nhập đầy đủ tài khoản và mật khẩu');
+    let hasError = false;
+
+    if (!username) {
+      setUsernameError('Vui lòng nhập tài khoản');
+      hasError = true;
+    } else {
+      setUsernameError('');
+    }
+
+    if (!password) {
+      setPasswordError('Vui lòng nhập mật khẩu');
+      hasError = true;
+    } else {
+      setPasswordError('');
+    }
+
+    if (hasError) {
       return;
     }
-  
+
     auth()
       .signInWithEmailAndPassword(username, password)
       .then(async (userCredential) => {
         const user = userCredential.user;
         console.log("Đăng nhập thành công với UID:", user.uid);
-  
+
         // Lấy dữ liệu người dùng từ Firestore
         try {
           const userDoc = await firestore()
-            .collection('accounts') // Sử dụng tên collection là 'accounts'
+            .collection('accounts')
             .doc(user.uid)
             .get();
-  
+
           if (userDoc.exists) {
             console.log("Dữ liệu người dùng:", userDoc.data());
             navigation.navigate('Home');
           } else {
             console.log("Tài khoản không tồn tại trong Firestore");
-            Alert.alert('Lỗi', 'Tài khoản không tồn tại trong Firestore');
-            setModalVisible(true); // Hiển thị modal nếu tài khoản không tồn tại
+            setModalVisible(true);
           }
         } catch (error) {
           console.error("Lỗi khi lấy dữ liệu người dùng:", error.message);
-          Alert.alert('Lỗi', 'Không thể lấy dữ liệu người dùng: ' + error.message);
-          setModalVisible(true); // Hiển thị modal nếu có lỗi
+          setModalVisible(true);
         }
       })
       .catch((error) => {
         console.error("Lỗi đăng nhập:", error.message);
-        Alert.alert('Lỗi', 'Thông tin đăng nhập không hợp lệ hoặc đã hết hạn.');
-        setModalVisible(true); // Hiển thị modal nếu lỗi đăng nhập
+        setModalVisible(true);
       });
   };
-  
 
   const handleRegister = () => {
     navigation.navigate('Register');
@@ -74,34 +88,24 @@ const LoginApp = () => {
       </View>
 
       <View style={{ marginLeft: 20, marginRight: 20, marginTop: 80 }}>
-        <View>
-          <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'black' }}>Tài Khoản :</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="user" size={40} color="black" style={styles.inputIcon} />
-            <TextInput 
-              placeholder='Nhập tài khoản' 
-              style={styles.text_input} 
-              value={username}
-              onChangeText={setUsername}
-            />
-          </View>
-        </View>
-        <View style={{ marginTop: 15 }}>
-          <Text style={{ fontSize: 25, fontWeight: 'bold', color: 'black' }}>Mật Khẩu :</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="lock" size={40} color="black" style={styles.inputIcon} />
-            <TextInput 
-              secureTextEntry={passwordSecure} 
-              placeholder='Nhập mật khẩu' 
-              style={styles.text_input} 
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => setPasswordSecure(!passwordSecure)} style={{ position: 'absolute', right: 10 }}>
-              <Icon name={passwordSecure ? 'eye-slash' : 'eye'} size={40} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <CustomTextInput
+          iconName="user"
+          placeholder="Nhập tài khoản"
+          value={username}
+          onChangeText={setUsername}
+          style={{ marginBottom: 30 }} // Thêm khoảng cách giữa tài khoản và mật khẩu
+        />
+        {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+        <CustomTextInput
+          iconName="lock"
+          placeholder="Nhập mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={passwordSecure}
+          onToggleSecureEntry={() => setPasswordSecure(!passwordSecure)}
+          style={{ marginBottom: 5 }} // Thêm khoảng cách giữa tài khoản và mật khẩu
+        />
+        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       </View>
 
       <View style={styles.view_2}>
@@ -120,22 +124,20 @@ const LoginApp = () => {
       </View>
       
       <View style={styles.view_button_container}>
-        <TouchableOpacity
+        <CustomButton
+          text="Đăng Kí"
+          onPress={handleRegister}
+          onHoverStart={() => setIsButtonHoveredLeft(true)}
+          onHoverEnd={() => setIsButtonHoveredLeft(false)}
           style={[styles.button_register, isButtonHoveredLeft && styles.buttonHoverLeft]}
-          onPressIn={() => setIsButtonHoveredLeft(true)}
-          onPressOut={() => setIsButtonHoveredLeft(false)}
-          onPress={handleRegister} 
-        >
-          <Text style={styles.text_button}>Đăng Kí</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        />
+        <CustomButton
+          text="Đăng Nhập"
+          onPress={handleLogin}
+          onHoverStart={() => setIsButtonHoveredRight(true)}
+          onHoverEnd={() => setIsButtonHoveredRight(false)}
           style={[styles.button_login, isButtonHoveredRight && styles.buttonHoverRight]}
-          onPressIn={() => setIsButtonHoveredRight(true)}
-          onPressOut={() => setIsButtonHoveredRight(false)}
-          onPress={handleLogin} 
-        >
-          <Text style={styles.text_button}>Đăng Nhập</Text>
-        </TouchableOpacity>
+        />
       </View>
 
       <View style={styles.view_social_container}>
@@ -162,64 +164,20 @@ const LoginApp = () => {
         </View>
       </View>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <CustomModal
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <LottieView
-              source={require('../material/animation/not_found.json')}
-              autoPlay
-              loop
-              style={styles.modalAnimation}
-            />
-            <Text style={styles.modalText}>Tài khoản không tồn tại</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.closeButtonText}>Đóng</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(!modalVisible)}
+      />
     </LinearGradient>
   );
-}
+};
 
 export default LoginApp;
-
-
 
 const styles = StyleSheet.create({
   view_1: {
     alignItems: "center",
     justifyContent: "center"
-  },
-  text_input: {
-    borderBottomWidth: 1,
-    backgroundColor: 'white',
-    height: 80,
-    fontSize: 20,
-    borderRadius: 10
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 2,
-    backgroundColor: 'white',
-    height: 80,
-    fontSize: 20,
-    borderRadius: 10
-  },
-  inputIcon: {
-    marginRight: 10, 
-    marginLeft: 10
   },
   view_2: {
     flexDirection: "row",
@@ -282,47 +240,13 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10
   },
-  text_button: {
-    fontSize: 30,
-    color: "black",
-    fontWeight: 'bold'
-  },
   view_social_container: {
     alignItems: 'center',
     marginTop: 40
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  errorText: {
+    color: 'red',
+    marginLeft: 20,
+    marginBottom: 10,
   },
-  modalContent: {
-    width: 300,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalAnimation: {
-    width: 150,
-    height: 150,
-  },
-  modalText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  closeButton: {
-    marginTop: 20,
-    backgroundColor: '#0DFF7D',
-    padding: 10,
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-  }
 });

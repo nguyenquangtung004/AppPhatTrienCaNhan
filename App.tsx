@@ -6,9 +6,9 @@ import store from './src/redux/store';
 import WelcomeApp from './src/Screen/WelcomeApp';
 import LoginApp from './src/Screen/LoginApp';
 import RegisterApp from './src/Screen/RegisterApp';
-import HomeApp from './src/comp/HomeApp';
-import ProfileApp from './src/comp/ProfileApp';
-import MentalManagementScreen from './src/comp/MentalManagement'; // Import new screen component
+import HomeApp from './src/Screen/HomeApp';
+import ProfileApp from './src/Screen/ProfileApp';
+import MentalManagementScreen from './src/Screen/MentalManagement'; // Import new screen component
 import StepCounterScreen from './src/comp/StepCounterScreen';
 
 const Stack = createNativeStackNavigator();

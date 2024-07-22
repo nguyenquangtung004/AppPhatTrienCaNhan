@@ -5,14 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import LottieView from 'lottie-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { addThankYouNote, setThankYouNotes } from '../redux/reducers';
-import Header from './Header';
+import Header from '../comp/Header';
 
 const MentalManagementScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
   const [newNoteContent, setNewNoteContent] = useState('');
   const [serialNumber, setSerialNumber] = useState(1);
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
   const dispatch = useDispatch();
   const thankYouNotes = useSelector(state => state.thankYouNotes);
 
@@ -77,18 +77,18 @@ const MentalManagementScreen = () => {
   const renderNote = ({ item }) => (
     <View style={styles.noteItem}>
       <View style={styles.noteHeader}>
-        <Text style={[{fontSize:20,color:'black'},styles.serialNumberText]}>{item.serialNumber}</Text>
+        <Text style={[{ fontSize: 20, color: 'black' }, styles.serialNumberText]}>{item.serialNumber}</Text>
       </View>
       <View style={styles.noteContent}>
-        <Text style={{color:'black',fontWeight:"bold",fontSize:20}}>Nội Dung: {item.content}</Text>
+        <Text style={{ color: 'black', fontWeight: "bold", fontSize: 20 }}>Nội Dung: {item.content}</Text>
       </View>
-      <Text style={[{color:'black',fontWeight:"bold",fontSize:20,fontStyle:'italic'},styles.noteDate]}>{item.date}</Text>
+      <Text style={[{ color: 'black', fontWeight: "bold", fontSize: 20, fontStyle: 'italic' }, styles.noteDate]}>{item.date}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Header userImage={userImage}/>
+      <Header userImage={userImage} />
       <FlatList
         data={thankYouNotes}
         renderItem={renderNote}
@@ -108,7 +108,7 @@ const MentalManagementScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Text style={styles.modalTitle}>Số Thứ Tự: 1</Text>
+              <Text style={styles.modalTitle}>Số Thứ Tự: {serialNumber}</Text>
               <Text style={styles.modalTitleCenter}>Thêm Lời Cảm Ơn</Text>
               <Text style={styles.modalTitle}>Ngày: {new Date().toLocaleDateString()}</Text>
             </View>
@@ -171,11 +171,11 @@ const styles = StyleSheet.create({
   },
   noteItem: {
     padding: 10,
-    height:200,
+    height: 200,
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    backgroundColor:'#99E77B',
+    backgroundColor: '#99E77B',
     borderColor: '#ddd',
   },
   noteHeader: {

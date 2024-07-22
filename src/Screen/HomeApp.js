@@ -3,23 +3,25 @@ import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity } fr
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
-import Header from './Header';
-import InitialModal from './InitialModal';
-import ProfileModal from './ProfileModal';
-import Leaderboard from './Leaderboard';
+import Header from '../comp/Header';
+import InitialModal from '../comp/InitialModal';
+import ProfileModal from '../comp/ProfileModal';
+import Leaderboard from '../comp/Leaderboard';
 
+// Component HomeApp để hiển thị trang chủ của ứng dụng
 const HomeApp = ({ navigation }) => {
-  const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png'));
-  const [isInitialModalVisible, setInitialModalVisible] = useState(false);
-  const [isProfileModalVisible, setProfileModalVisible] = useState(false);
-  const [fullName, setFullName] = useState('');
-  const [age, setAge] = useState('');
-  const [gender, setGender] = useState('');
-  const [address, setAddress] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [profileImage, setProfileImage] = useState(null);
-  const [bannerImage, setBannerImage] = useState(null);
+  const [userImage, setUserImage] = useState(require('../material/image/avatar/user_icon.png')); // Ảnh đại diện người dùng
+  const [isInitialModalVisible, setInitialModalVisible] = useState(false); // Trạng thái hiển thị modal ban đầu
+  const [isProfileModalVisible, setProfileModalVisible] = useState(false); // Trạng thái hiển thị modal hồ sơ
+  const [fullName, setFullName] = useState(''); // Họ và tên người dùng
+  const [age, setAge] = useState(''); // Tuổi người dùng
+  const [gender, setGender] = useState(''); // Giới tính người dùng
+  const [address, setAddress] = useState(''); // Địa chỉ người dùng
+  const [phoneNumber, setPhoneNumber] = useState(''); // Số điện thoại người dùng
+  const [profileImage, setProfileImage] = useState(null); // Ảnh hồ sơ người dùng
+  const [bannerImage, setBannerImage] = useState(null); // Ảnh banner
 
+  // useEffect để kiểm tra hồ sơ người dùng và tải ảnh banner khi component được render
   useEffect(() => {
     const checkUserProfile = async () => {
       const user = auth().currentUser;
@@ -38,11 +40,13 @@ const HomeApp = ({ navigation }) => {
     checkUserProfile();
   }, []);
 
+  // Hàm mở modal tạo hồ sơ khi modal ban đầu bị đóng
   const handleCreateProfile = () => {
     setInitialModalVisible(false);
     setProfileModalVisible(true);
   };
 
+  // Hàm chọn ảnh từ thư viện ảnh
   const handleSelectImage = () => {
     launchImageLibrary({}, (response) => {
       if (response.didCancel) {
@@ -55,6 +59,7 @@ const HomeApp = ({ navigation }) => {
     });
   };
 
+  // Hàm lưu hồ sơ người dùng
   const handleSaveProfile = () => {
     if (!fullName || !age || !gender || !address) {
       Alert.alert('Lỗi', 'Vui lòng điền tất cả các trường');
@@ -82,6 +87,7 @@ const HomeApp = ({ navigation }) => {
       });
   };
 
+  // Hàm tải ảnh banner từ Firestore
   const fetchBannerImage = async () => {
     try {
       const bannerRef = firestore().collection('banners').doc('5aUsWibhmSEKChT7180o'); // Sử dụng bannerId của bạn
@@ -91,20 +97,20 @@ const HomeApp = ({ navigation }) => {
         if (data && data.url_image) {
           setBannerImage(data.url_image);
         } else {
-          console.error('No url_image field found in the document');
+          console.error('Không tìm thấy trường url_image trong tài liệu');
         }
       } else {
-        console.error('Document does not exist');
+        console.error('Tài liệu không tồn tại');
       }
     } catch (error) {
-      console.error('Error fetching banner image: ', error);
+      console.error('Lỗi khi tải ảnh banner: ', error);
     }
   };
 
+  // Hàm xử lý khi nhấn nút chuyển màn hình
   const handlePress = (screenName) => {
     navigation.navigate(screenName);
   };
-
 
   return (
     <View style={styles.container}>
@@ -130,13 +136,13 @@ const HomeApp = ({ navigation }) => {
         handleSelectImage={handleSelectImage}
         handleSaveProfile={handleSaveProfile}
       />
-      <View >
+      <View>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Bảng Xếp Hạng</Text>
         <View style={{ width: "100%", height: 200, backgroundColor: '#D5F8D5', justifyContent: 'center' }}>
           <Leaderboard />
         </View>
       </View>
-      <View >
+      <View>
         <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Hoạt Động</Text>
       </View>
       <View style={styles.container_item}>
@@ -169,17 +175,14 @@ const HomeApp = ({ navigation }) => {
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Vận Động</Text>
           </View >
         </View>
-
-
       </View>
-
-
     </View>
   );
 };
 
 export default HomeApp;
 
+// Định nghĩa các kiểu dáng cho component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -189,7 +192,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: 250,
   },
-
   container_item: {
     flex: 1,
     justifyContent: 'center',
