@@ -9,14 +9,14 @@ import { map, filter } from 'rxjs/operators';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const StepScreen = ({ navigation }) => {
-  const [steps, setSteps] = useState(0);
-  const [subscription, setSubscription] = useState(null);
+  const [steps, setSteps] = useState(0); // Biến trạng thái để lưu số bước chân
+  const [subscription, setSubscription] = useState(null); // Biến trạng thái để lưu thông tin đăng ký của cảm biến gia tốc
 
   useEffect(() => {
-    requestActivityRecognitionPermission();
+    requestActivityRecognitionPermission(); // Yêu cầu quyền nhận dạng hoạt động khi component được render
     return () => {
       if (subscription) {
-        subscription.unsubscribe();
+        subscription.unsubscribe(); // Hủy đăng ký khi component bị unmount
       }
     };
   }, []);
@@ -25,48 +25,52 @@ const StepScreen = ({ navigation }) => {
     try {
       let result;
       if (Platform.OS === 'android') {
-        result = await request(PERMISSIONS.ANDROID.ACTIVITY_RECOGNITION);
+        result = await request(PERMISSIONS.ANDROID.ACTIVITY_RECOGNITION); // Yêu cầu quyền nhận dạng hoạt động trên Android
       } else if (Platform.OS === 'ios') {
-        result = await request(PERMISSIONS.IOS.MOTION);
+        result = await request(PERMISSIONS.IOS.MOTION); // Yêu cầu quyền nhận dạng hoạt động trên iOS
       }
 
       if (result === RESULTS.GRANTED) {
-        console.log('Đã cấp quyền nhận dạng hoạt động');
+        console.log('Đã cấp quyền nhận dạng hoạt động'); // In ra console nếu quyền đã được cấp
       } else {
-        console.log('Không cấp quyền nhận dạng hoạt động');
+        console.log('Không cấp quyền nhận dạng hoạt động'); // In ra console nếu quyền không được cấp
       }
     } catch (err) {
-      console.warn(err);
+      console.warn(err); // Cảnh báo nếu có lỗi xảy ra
     }
   };
 
   const startCounting = () => {
-    const subscription = new Accelerometer({
-      updateInterval: 400,
-    })
-      .pipe(
-        map(({ x, y, z }) => Math.sqrt(x * x + y * y + z * z)),
-        filter(speed => speed > 1.2)
-      )
-      .subscribe(() => {
-        setSteps(prevSteps => prevSteps + 1);
-      });
+    if (Accelerometer) {
+      const subscription = new Accelerometer({
+        updateInterval: 400, // Đặt khoảng thời gian cập nhật là 400ms
+      })
+        .pipe(
+          map(({ x, y, z }) => Math.sqrt(x * x + y * y + z * z)), // Tính toán gia tốc tổng hợp
+          filter(speed => speed > 1.2) // Lọc những chuyển động có gia tốc lớn hơn 1.2
+        )
+        .subscribe(() => {
+          setSteps(prevSteps => prevSteps + 1); // Tăng số bước chân mỗi khi điều kiện lọc được thỏa mãn
+        });
 
-    setSubscription(subscription);
+      setSubscription(subscription); // Lưu thông tin đăng ký vào biến trạng thái
+    } else {
+      console.warn('Accelerometer is not available'); // Cảnh báo nếu cảm biến gia tốc không có sẵn
+    }
   };
 
   const stopCounting = () => {
     if (subscription) {
-      subscription.unsubscribe();
-      setSubscription(null);
+      subscription.unsubscribe(); // Hủy đăng ký cảm biến gia tốc
+      setSubscription(null); // Đặt lại biến trạng thái về null
     }
   };
 
   const toggleCounting = () => {
     if (subscription) {
-      stopCounting();
+      stopCounting(); // Dừng đếm bước chân nếu đang đếm
     } else {
-      startCounting();
+      startCounting(); // Bắt đầu đếm bước chân nếu chưa đếm
     }
   };
 
