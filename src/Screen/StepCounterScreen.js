@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, ScrollView, Image, ImageBackground } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, FlatList, ImageBackground, ScrollView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import LottieView from 'lottie-react-native';
+import Sound from 'react-native-sound';
+import firestore from '@react-native-firebase/firestore';
 import { accelerometer, setUpdateIntervalForType, SensorTypes } from 'react-native-sensors';
 import { map, filter, debounceTime } from 'rxjs/operators';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import LinearGradient from 'react-native-linear-gradient';
+import Header from '../comp/Header'; // Thêm phần nhập khẩu cho Header
 
 const STEP_LENGTH_KM = 0.000762; // Chiều dài trung bình của một bước chân
 const CALORIES_PER_STEP = 0.04; // Calo tiêu thụ mỗi bước
 
-const StepScreen = ({ navigation }) => {
+const App = () => {
   const [steps, setSteps] = useState(0);
   const [subscription, setSubscription] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [musicList, setMusicList] = useState([]);
+  const [currentTrack, setCurrentTrack] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     requestActivityRecognitionPermission();
     return () => {
       if (subscription) {
         subscription.unsubscribe();
+      }
+      if (currentTrack) {
+        currentTrack.release();
       }
     };
   }, []);
@@ -37,6 +46,16 @@ const StepScreen = ({ navigation }) => {
     }
     return () => clearInterval(interval);
   }, [isRunning, startTime]);
+
+  useEffect(() => {
+    const fetchMusic = async () => {
+      const musicCollection = await firestore().collection('music').get();
+      const musicData = musicCollection.docs.map(doc => doc.data());
+      setMusicList(musicData);
+    };
+
+    fetchMusic();
+  }, []);
 
   const requestActivityRecognitionPermission = async () => {
     try {
@@ -90,6 +109,12 @@ const StepScreen = ({ navigation }) => {
     setSteps(0);
     setElapsedTime(0);
     setStartTime(null);
+    if (currentTrack) {
+      currentTrack.stop(() => {
+        setCurrentTrack(null);
+        setIsPlaying(false);
+      });
+    }
   };
 
   const toggleCounting = () => {
@@ -100,86 +125,202 @@ const StepScreen = ({ navigation }) => {
     }
   };
 
+  const togglePlayback = () => {
+    if (currentTrack) {
+      if (isPlaying) {
+        console.log('Tạm dừng track hiện tại');
+        currentTrack.pause();
+        setIsPlaying(false);
+      } else {
+        console.log('Phát lại track hiện tại');
+        currentTrack.play(() => {
+          console.log('Hoàn thành phát track hiện tại');
+          setIsPlaying(false);
+          currentTrack.release();
+        });
+        setIsPlaying(true);
+      }
+    } else {
+      playTrack(currentIndex);
+    }
+  };
+
+  const playTrack = (index) => {
+    if (currentTrack) {
+      currentTrack.stop(() => {
+        loadAndPlayTrack(index);
+      });
+    } else {
+      loadAndPlayTrack(index);
+    }
+  };
+
+  const loadAndPlayTrack = (index) => {
+    const track = new Sound(musicList[index].song_link, null, (error) => {
+      if (error) {
+        console.log('Lỗi khi tải track:', error);
+        return;
+      }
+      console.log('Track đã được tải thành công');
+      setCurrentTrack(track);
+      setCurrentIndex(index);
+      track.play(() => {
+        console.log('Hoàn thành phát track');
+        setIsPlaying(false);
+        track.release();
+      });
+      setIsPlaying(true);
+    });
+  };
+
+  const handleNextTrack = () => {
+    const nextIndex = (currentIndex + 1) % musicList.length;
+    playTrack(nextIndex);
+  };
+
+  const handlePrevTrack = () => {
+    const prevIndex = (currentIndex - 1 + musicList.length) % musicList.length;
+    playTrack(prevIndex);
+  };
+
+  const handleFastForward = () => {
+    if (currentTrack) {
+      currentTrack.getCurrentTime((seconds) => {
+        currentTrack.setCurrentTime(Math.min(seconds + 10, currentTrack.getDuration()));
+      });
+    }
+  };
+
+  const handleRewind = () => {
+    if (currentTrack) {
+      currentTrack.getCurrentTime((seconds) => {
+        currentTrack.setCurrentTime(Math.max(seconds - 10, 0));
+      });
+    }
+  };
+
   const distance = (steps * STEP_LENGTH_KM).toFixed(2);
   const calories = (steps * CALORIES_PER_STEP).toFixed(2);
   const hours = Math.floor(elapsedTime / 3600000);
   const minutes = Math.floor((elapsedTime % 3600000) / 60000);
   const seconds = Math.floor((elapsedTime % 60000) / 1000);
 
-  return (
-    <View style={styles.container}>
-      <ScrollView>
-
-
-        <View style={styles.metricSection}>
-          <Text style={styles.metricTitle}>Bước chân</Text>
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${(steps / 5000) * 100}%` }]} />
-          </View>
-          <Text style={styles.metricSubtitle}>{steps} / 5,000</Text>
-        </View>
-
-        <View style={styles.metricSection}>
-          <Text style={styles.metricTitle}>Số km đã đi</Text>
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${(distance / 5) * 100}%` }]} />
-          </View>
-          <Text style={styles.metricSubtitle}>{distance} / 5 km</Text>
-        </View>
-
-        <View style={styles.metricSection}>
-          <Text style={styles.metricTitle}>Số calo giảm</Text>
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${(calories / 300) * 100}%` }]} />
-          </View>
-          <Text style={styles.metricSubtitle}>{calories} / 300 cal</Text>
-        </View>
-
-        <View style={styles.metricSection}>
-          <Text style={styles.metricTitle}>Thời gian vận động</Text>
-          <View style={styles.progressBarContainer}>
-            <View style={[styles.progressBar, { width: `${(distance / 5) * 100}%` }]} />
-          </View>
-          <Text style={styles.metricSubtitle}>{`${hours}h ${minutes}m ${seconds}s`} / 60 min</Text>
-        </View>
-
-        <View style={styles.resetButtonContainer}>
-          <TouchableOpacity style={styles.resetButton} onPress={resetAll}>
-            <Text style={styles.resetButtonText}>Reset</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.playlistSection}>
-          <View style={styles.playlistItem}>
-            <ImageBackground
-              source={{ uri: 'https://cdn.usegalileo.ai/sdxl10/4fe69cc9-83ae-4dba-af7c-e68719190061.png' }}
-              style={styles.playlistImage}
+  const renderItem = ({ item, index }) => (
+    <TouchableOpacity onPress={() => playTrack(index)}>
+      <View style={styles.playlistItem}>
+        <ImageBackground
+          source={{ uri: item.picture }}
+          style={styles.playlistImage}
+        >
+          {currentIndex === index && isPlaying && (
+            <LinearGradient
+              colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']}
+              style={styles.playingOverlay}
             />
-            <View style={styles.playlistTextContainer}>
-              <Text style={styles.playlistTitle}>Hãy Trao Cho Anh</Text>
-              <Text style={styles.playlistSubtitle}>Sơn Tùng MTP</Text>
-            </View>
-            <TouchableOpacity style={styles.playButton} onPress={toggleCounting}>
-              <Icon name={isRunning ? "pause-circle" : "play-circle"} size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.progressContainer}>
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: '50%' }]} />
-              <View style={styles.progressThumb} />
-            </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>1:17</Text>
-              <Text style={styles.progressLabel}>2:23</Text>
-            </View>
-          </View>
+          )}
+        </ImageBackground>
+        <View style={styles.playlistTextContainer}>
+          <Text style={styles.playlistTitle}>{item.name_song}</Text>
+          <Text style={styles.playlistSubtitle}>{item.singer_name}</Text>
         </View>
+      </View>
+    </TouchableOpacity>
+  );
 
+  return (
+    <ScrollView style={styles.container}>
 
+      <View style={styles.metricContainer}>
+        <View style={styles.metric}>
+          <Image source={require('../material/image/item/steps.png')} style={styles.icon} />
+          <View style={styles.metricInfo}>
+            <Text style={styles.metricTitle}>Steps</Text>
+            <Text style={styles.metricSubtitle}>{steps} / 10,000</Text>
+          </View>
+          <Text style={styles.metricValue}>{steps}</Text>
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: `${(steps / 10000) * 100}%` }]} />
+        </View>
+      </View>
 
+      <View style={styles.metricContainer}>
+        <View style={styles.metric}>
+          <Image source={require('../material/image/item/qd.png')} style={styles.icon} />
+          <View style={styles.metricInfo}>
+            <Text style={styles.metricTitle}>Distance</Text>
+            <Text style={styles.metricSubtitle}>{distance} / 5 km</Text>
+          </View>
+          <Text style={styles.metricValue}>{distance} km</Text>
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: `${(distance / 5) * 100}%` }]} />
+        </View>
+      </View>
 
-      </ScrollView>
-    </View>
+      <View style={styles.metricContainer}>
+        <View style={styles.metric}>
+          <Image source={require('../material/image/item/calo.png')} style={styles.icon} />
+          <View style={styles.metricInfo}>
+            <Text style={styles.metricTitle}>Calories</Text>
+            <Text style={styles.metricSubtitle}>{calories} / 300 cal</Text>
+          </View>
+          <Text style={styles.metricValue}>{calories}</Text>
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: `${(calories / 300) * 100}%` }]} />
+        </View>
+      </View>
+
+      <View style={styles.metricContainer}>
+        <View style={styles.metric}>
+          <Image source={require('../material/image/item/time.png')} style={styles.icon} />
+          <View style={styles.metricInfo}>
+            <Text style={styles.metricTitle}>Active Time</Text>
+            <Text style={styles.metricSubtitle}>{`${hours}h ${minutes}m ${seconds}s`} / 60 min</Text>
+          </View>
+          <Text style={styles.metricValue}>{elapsedTime}</Text>
+        </View>
+        <View style={styles.progressBarContainer}>
+          <View style={[styles.progressBar, { width: `${(elapsedTime / 3600000) * 100}%` }]} />
+        </View>
+      </View>
+
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.resetButton} onPress={resetAll}>
+          <Text style={styles.buttonText}>Reset All</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.startButton} onPress={toggleCounting}>
+          <Text style={styles.buttonText}>{isRunning ? 'Dừng Lại' : 'Bắt Đầu'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={musicList}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.playlistSection}
+        initialNumToRender={2}
+      />
+
+      <View style={styles.controlButtonsContainer}>
+        <TouchableOpacity style={styles.controlButton} onPress={handlePrevTrack}>
+          <Icon name="backward" size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlButton} onPress={handleRewind}>
+          <Icon name="fast-backward" size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlButton} onPress={togglePlayback}>
+          <Icon name={isPlaying ? "pause" : "play"} size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlButton} onPress={handleFastForward}>
+          <Icon name="fast-forward" size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.controlButton} onPress={handleNextTrack}>
+          <Icon name="forward" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
@@ -187,28 +328,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+    padding: 16,
   },
-  header: {
+  metricContainer: {
+    marginBottom: 16,
+  },
+  metric: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    paddingBottom: 8,
+    justifyContent: 'space-between',
   },
   icon: {
     width: 24,
     height: 24,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  metricInfo: {
     flex: 1,
-    color: '#111418',
-  },
-  metricSection: {
-    padding: 16,
+    marginLeft: 16,
   },
   metricTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#111418',
+  },
+  metricSubtitle: {
+    fontSize: 14,
+    color: '#637588',
+  },
+  metricValue: {
     fontSize: 16,
     fontWeight: '500',
     color: '#111418',
@@ -219,19 +366,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
     marginTop: 4,
-    marginBottom: 8,
   },
   progressBar: {
     height: '100%',
     backgroundColor: '#111418',
   },
-  metricSubtitle: {
-    fontSize: 14,
-    color: '#637588',
-  },
-  resetButtonContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
   },
   resetButton: {
     backgroundColor: '#f0f2f4',
@@ -239,11 +382,104 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,
+    flex: 1,
+    marginRight: 8,
   },
-  resetButtonText: {
+  startButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+    flex: 1,
+    marginLeft: 8,
+  },
+  buttonText: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: 'black',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
     color: '#111418',
+  },
+  musicContainer: {
+    marginBottom: 16,
+  },
+  musicItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  musicTitle: {
+    fontSize: 16,
+    color: '#111418',
+  },
+  playButton: {
+    backgroundColor: '#f0f2f4',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  playButtonText: {
+    fontSize: 14,
+    color: '#111418',
+  },
+  nowPlaying: {
+    backgroundColor: '#f0f2f4',
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 16,
+  },
+  nowPlayingImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+  },
+  nowPlayingInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  nowPlayingTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111418',
+  },
+  nowPlayingSubtitle: {
+    fontSize: 14,
+    color: '#637588',
+  },
+  nowPlayingPlayButton: {
+    backgroundColor: '#5ea5ed',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    marginTop: 16,
+  },
+  progressTrack: {
+    height: 4,
+    backgroundColor: '#111418',
+    borderRadius: 2,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#111418',
+  },
+  progressLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  progressLabel: {
+    fontSize: 12,
+    color: '#637588',
   },
   playlistSection: {
     padding: 16,
@@ -274,7 +510,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#637588',
   },
-  playButton: {
+  playingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
+  },
+  controlButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
+  },
+  controlButton: {
     backgroundColor: '#5ea5ed',
     borderRadius: 20,
     width: 40,
@@ -282,65 +527,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  progressContainer: {
-    paddingTop: 8,
-  },
-  progressTrack: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 4,
-    backgroundColor: '#111418',
-    borderRadius: 2,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#111418',
-  },
-  progressThumb: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#111418',
-    position: 'absolute',
-    top: -4,
-    left: '50%',
-  },
-  progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 4,
-  },
-  progressLabel: {
-    fontSize: 12,
-    color: '#637588',
-  },
-  footer: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#f0f2f4',
-    padding: 16,
-    paddingBottom: 8,
-    backgroundColor: '#ffffff',
-  },
-  footerButton: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  footerButtonText: {
-    fontSize: 12,
-    color: '#111418',
-    marginTop: 4,
-  },
-  inactiveIcon: {
-    tintColor: '#637588',
-  },
-  inactiveText: {
-    color: '#637588',
-  },
-  footerSpacer: {
-    height: 20,
-    backgroundColor: '#ffffff',
-  },
 });
 
-export default StepScreen;
+export default App;
