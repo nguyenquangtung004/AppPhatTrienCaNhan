@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity, ScrollView } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -113,7 +113,7 @@ const HomeApp = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Header userImage={userImage} />
       {bannerImage && (
         <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
@@ -169,14 +169,14 @@ const HomeApp = ({ navigation }) => {
           </View>
 
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen2')}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Steps')}>
               <Image source={require('../material/image/item/db.png')} />
             </TouchableOpacity>
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Vận Động</Text>
           </View >
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

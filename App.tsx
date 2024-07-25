@@ -1,7 +1,7 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {Provider} from 'react-redux';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import store from './src/redux/store';
 import WelcomeApp from './src/Screen/WelcomeApp';
 import LoginApp from './src/Screen/LoginApp';
@@ -9,7 +9,7 @@ import RegisterApp from './src/Screen/RegisterApp';
 import HomeApp from './src/Screen/HomeApp';
 import ProfileApp from './src/Screen/ProfileApp';
 import MentalManagementScreen from './src/Screen/MentalManagement'; // Import new screen component
-import StepCounterScreen from './src/comp/StepCounterScreen';
+import StepCounterScreen from './src/Screen/StepCounterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,13 +18,41 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Welcome">
-          <Stack.Screen name="Welcome" component={WelcomeApp} options={{ headerShown: false }} />
-          <Stack.Screen name="Login" component={LoginApp} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={RegisterApp} options={{ headerShown: false }} />
-          <Stack.Screen name="Home" component={HomeApp} options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={ProfileApp} options={{ headerShown: false }} />
-          <Stack.Screen name="Mental" component={MentalManagementScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Steps" component={StepCounterScreen} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeApp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginApp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterApp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomeApp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileApp}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Mental"
+            component={MentalManagementScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Steps"
+            component={StepCounterScreen}
+            options={{headerShown: false}}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
