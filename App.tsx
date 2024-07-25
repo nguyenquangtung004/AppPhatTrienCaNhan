@@ -10,6 +10,7 @@ import HomeApp from './src/Screen/HomeApp';
 import ProfileApp from './src/Screen/ProfileApp';
 import MentalManagementScreen from './src/Screen/MentalManagement'; // Import new screen component
 import StepCounterScreen from './src/Screen/StepCounterScreen';
+import VideoScreen from './src/Screen/VideoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +52,11 @@ const App = () => {
           <Stack.Screen
             name="Steps"
             component={StepCounterScreen}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="Music"
+            component={VideoScreen}
             options={{headerShown: false}}
           />
         </Stack.Navigator>

@@ -148,7 +148,7 @@ const HomeApp = ({ navigation }) => {
       <View style={styles.container_item}>
         <View>
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen1')}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Music')}>
               <Image source={require('../material/image/item/ty.png')} />
             </TouchableOpacity>
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Thiền Và YoGa</Text>
