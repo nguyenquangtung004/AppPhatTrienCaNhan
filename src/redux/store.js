@@ -8,4 +8,7 @@ const store = configureStore({
   }
 });
 
+// Log cấu hình store để kiểm tra
+console.log("Cấu hình store của Redux:", store.getState());
+
 export default store;

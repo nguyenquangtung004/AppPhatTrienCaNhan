@@ -17,24 +17,24 @@ const AuthButtons = ({ onRegister, onNavigateLogin }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    height: 80,
-    marginTop: 10
+    flexDirection: 'row', // Bố trí các nút theo hàng ngang
+    height: 80, // Chiều cao của container
+    marginTop: 10 // Khoảng cách phía trên
   },
   button: {
-    backgroundColor: "#0DFF7D",
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    margin: 20,
-    height: 80,
-    borderRadius: 10
+    backgroundColor: "#0DFF7D", // Màu nền của nút
+    flex: 1, // Chiếm toàn bộ không gian có sẵn
+    justifyContent: 'center', // Căn giữa theo chiều dọc
+    alignItems: 'center', // Căn giữa theo chiều ngang
+    borderWidth: 2, // Độ dày của viền
+    margin: 20, // Khoảng cách xung quanh nút
+    height: 80, // Chiều cao của nút
+    borderRadius: 10 // Bo tròn các góc của nút
   },
   text: {
-    fontSize: 30,
-    color: "black",
-    fontWeight: 'bold'
+    fontSize: 30, // Kích thước chữ
+    color: "black", // Màu chữ
+    fontWeight: 'bold' // Độ đậm của chữ
   }
 });
 

@@ -38,18 +38,18 @@ const WelcomeApp = () => {
         duration: 1000,
         easing: Easing.ease,
         useNativeDriver: true,
-        delay: 300,
+        delay: 300, // Độ trễ 300ms.
       }
     ).start();
 
     Animated.timing(
-      fadeAnimBan,{
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.ease,
-        useNativeDriver: true,
-        delay: 1000
-      }
+      fadeAnimBan, {
+      toValue: 1,
+      duration: 1000,
+      easing: Easing.ease,
+      useNativeDriver: true,
+      delay: 1000 // Độ trễ 1000ms.
+    }
     ).start();
 
     // Chọn ngẫu nhiên một câu trích dẫn từ mảng quotes.
@@ -67,21 +67,21 @@ const WelcomeApp = () => {
 
   return (
     <LinearGradient colors={['#FFFFFF', '#90EE90']} style={styles.bg_view}>
-      <View style={{justifyContent:'center', alignItems:'center',flex:1}}>
+      <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
         <LottieView
           source={require('../material/animation/AnimWelcome.json')}
           autoPlay
           loop
           speed={0.5}
           style={styles.gif_anim}
-        />    
+        />
         <View style={styles.text_welcome_container}>
           <Animated.Text style={[styles.text_welcome, { opacity: fadeAnimChao }]}>Chào</Animated.Text>
           <Animated.Text style={[styles.text_welcome, { opacity: fadeAnimMung }]}>mừng</Animated.Text>
           <Animated.Text style={[styles.text_welcome, { opacity: fadeAnimBan }]}>bạn</Animated.Text>
         </View>
-      </View> 
-     
+      </View>
+
       <View style={styles.text_quote_container}>
         <Text style={styles.quoteText}>{randomQuote}</Text>
       </View>
@@ -117,3 +117,12 @@ const styles = StyleSheet.create({
     marginBottom: 50 // Khoảng cách lề dưới.
   }
 });
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Animation 'Chào' đã bắt đầu chạy");
+console.log("Animation 'Mừng' đã bắt đầu chạy với độ trễ 300ms");
+console.log("Animation 'Bạn' đã bắt đầu chạy với độ trễ 1000ms");
+// console.log("Câu trích dẫn ngẫu nhiên được chọn: ", randomQuote);
+console.log("Chuyển hướng sang màn hình 'Login' sau 4 giây");

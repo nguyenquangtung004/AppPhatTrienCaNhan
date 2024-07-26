@@ -114,7 +114,7 @@ const HomeApp = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Header userImage={userImage} />
+
       {bannerImage && (
         <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
       )}
@@ -214,3 +214,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Trang chủ HomeApp đã được render.");
+// console.log("Hồ sơ người dùng hiện tại: ", { fullName, age, gender, address, phoneNumber, profileImage });
+// console.log("Ảnh banner: ", bannerImage);
+// console.log("Modal khởi tạo hồ sơ hiển thị: ", isInitialModalVisible);
+// console.log("Modal hồ sơ hiển thị: ", isProfileModalVisible);

@@ -15,3 +15,9 @@ export const setThankYouNotes = (notes) => ({
   type: SET_THANK_YOU_NOTES,
   payload: notes,
 });
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Hành động addThankYouNote được gọi với payload: ", note);
+console.log("Hành động setThankYouNotes được gọi với payload: ", notes);

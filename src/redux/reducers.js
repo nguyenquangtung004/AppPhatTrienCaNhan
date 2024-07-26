@@ -7,10 +7,12 @@ const thankYouNotesSlice = createSlice({
   reducers: {
     // Reducer để thiết lập danh sách các ghi chú cảm ơn
     setThankYouNotes(state, action) {
+      console.log("Hành động setThankYouNotes được gọi với payload: ", action.payload);
       return action.payload; // Cập nhật trạng thái với payload là danh sách các ghi chú
     },
     // Reducer để thêm một ghi chú cảm ơn
     addThankYouNote(state, action) {
+      console.log("Hành động addThankYouNote được gọi với payload: ", action.payload);
       state.push(action.payload); // Thêm ghi chú mới vào mảng trạng thái hiện tại
     }
   }

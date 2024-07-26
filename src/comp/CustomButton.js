@@ -16,9 +16,9 @@ const CustomButton = ({ text, onPress, onHoverStart, onHoverEnd, style }) => {
 
 const styles = StyleSheet.create({
   textButton: {
-    fontSize: 30,
-    color: "black",
-    fontWeight: 'bold',
+    fontSize: 30, // Kích thước chữ của nút
+    color: "black", // Màu chữ của nút
+    fontWeight: 'bold', // Độ đậm của chữ
   },
 });
 

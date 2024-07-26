@@ -8,7 +8,7 @@ import { map, filter, debounceTime } from 'rxjs/operators';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
 
-
+// Constants
 const STEP_LENGTH_KM = 0.000762; // Chiều dài trung bình của một bước chân
 const CALORIES_PER_STEP = 0.04; // Calo tiêu thụ mỗi bước
 
@@ -530,3 +530,15 @@ const styles = StyleSheet.create({
 });
 
 export default StepCounterScreen;
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Quyền nhận dạng hoạt động đã được yêu cầu.");
+console.log("Quá trình fetch dữ liệu âm nhạc bắt đầu.");
+// console.log("Số bước hiện tại: ", steps);
+// console.log("Thời gian hoạt động: ", elapsedTime);
+// console.log("Danh sách nhạc: ", musicList);
+// console.log("Đang phát track: ", currentTrack);
+// console.log("Track hiện tại: ", musicList[currentIndex]);
+// console.log("Trạng thái phát nhạc: ", isPlaying);

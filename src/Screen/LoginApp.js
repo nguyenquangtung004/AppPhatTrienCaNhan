@@ -20,10 +20,12 @@ const LoginApp = () => {
   const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation();
 
+  // Xử lý khi nhấn nút "Ghi nhớ mật khẩu"
   const handleRememberPassword = () => {
     setRememberPassword(!rememberPassword);
   };
 
+  // Xử lý khi nhấn nút "Đăng nhập"
   const handleLogin = () => {
     let hasError = false;
 
@@ -76,6 +78,7 @@ const LoginApp = () => {
       });
   };
 
+  // Xử lý khi nhấn nút "Đăng ký"
   const handleRegister = () => {
     navigation.navigate('Register');
   };
@@ -287,3 +290,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Quá trình đăng nhập bắt đầu.");
+// console.log("Tên tài khoản: ", username);
+// console.log("Mật khẩu: ", password);
+// console.log("Modal hiển thị: ", modalVisible);

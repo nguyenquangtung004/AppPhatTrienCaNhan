@@ -28,23 +28,23 @@ const CustomTextInput = ({ iconName, placeholder, value, onChangeText, secureTex
 
 const styles = StyleSheet.create({
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    backgroundColor: 'white',
-    height: 80,
-    borderRadius: 10,
-    paddingHorizontal: 10,
+    flexDirection: 'row', // Bố trí các phần tử theo hàng ngang
+    alignItems: 'center', // Căn giữa các phần tử theo chiều dọc
+    borderBottomWidth: 1, // Độ dày của đường viền dưới
+    backgroundColor: 'white', // Màu nền của container
+    height: 80, // Chiều cao của container
+    borderRadius: 10, // Bo tròn các góc
+    paddingHorizontal: 10, // Khoảng cách ngang bên trong
   },
   inputIcon: {
-    marginRight: 10,
+    marginRight: 10, // Khoảng cách bên phải của icon
   },
   textInput: {
-    flex: 1,
-    fontSize: 16,
+    flex: 1, // Chiếm toàn bộ không gian còn lại
+    fontSize: 16, // Kích thước chữ của text input
   },
   toggleIcon: {
-    marginLeft: 10,
+    marginLeft: 10, // Khoảng cách bên trái của icon toggle
   },
 });
 

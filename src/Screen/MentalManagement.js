@@ -16,6 +16,7 @@ const MentalManagementScreen = () => {
   const dispatch = useDispatch();
   const thankYouNotes = useSelector(state => state.thankYouNotes);
 
+  // Fetch notes from Firestore
   useEffect(() => {
     const fetchNotes = async () => {
       try {
@@ -288,3 +289,11 @@ const styles = StyleSheet.create({
     height: 150,
   },
 });
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Quá trình tải ghi chú bắt đầu.");
+// console.log("Danh sách ghi chú: ", thankYouNotes);
+// console.log("Nội dung ghi chú mới: ", newNoteContent);
+// console.log("Modal ghi chú thành công hiển thị: ", isSuccessModalVisible);

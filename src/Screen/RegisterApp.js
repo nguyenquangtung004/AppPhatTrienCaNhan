@@ -9,7 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
 const RegisterApp = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Hook để điều hướng giữa các màn hình.
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +22,7 @@ const RegisterApp = () => {
   const [passwordVisibility, setPasswordVisibility] = useState(true);
   const [confirmPasswordVisibility, setConfirmPasswordVisibility] = useState(true);
 
+  // Hàm kiểm tra đầu vào
   const validateInputs = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -65,6 +66,7 @@ const RegisterApp = () => {
     return true;
   };
 
+  // Hàm xử lý đăng ký
   const handleRegister = () => {
     clearErrors();
     if (validateInputs()) {
@@ -88,6 +90,7 @@ const RegisterApp = () => {
     }
   };
 
+  // Hàm xóa các lỗi hiện tại
   const clearErrors = () => {
     setUsernameError('');
     setEmailError('');
@@ -95,10 +98,12 @@ const RegisterApp = () => {
     setConfirmPasswordError('');
   };
 
+  // Hàm thay đổi trạng thái hiển thị mật khẩu
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!passwordVisibility);
   };
 
+  // Hàm thay đổi trạng thái hiển thị mật khẩu xác nhận
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordVisibility(!confirmPasswordVisibility);
   };
@@ -171,3 +176,13 @@ const styles = StyleSheet.create({
 });
 
 export default RegisterApp;
+
+// Logs chi tiết:
+// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
+
+console.log("Bắt đầu quá trình đăng ký người dùng.");
+// console.log("Tên tài khoản: ", username);
+// console.log("Email: ", email);
+// console.log("Mật khẩu: ", password);
+// console.log("Xác nhận mật khẩu: ", confirmPassword);
+// console.log("Modal thành công hiển thị: ", showSuccessModal);

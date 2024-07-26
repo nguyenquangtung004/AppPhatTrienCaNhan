@@ -2,14 +2,14 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const Header = ({ userImage }) => {
+const Header = ({ navigation, title, userImage }) => {
   return (
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity style={styles.menuIcon}>
-          <Icon name="bars" size={30} color="black" />
+        <TouchableOpacity style={styles.menuIcon} onPress={() => navigation.goBack()}>
+          <Icon name="arrow-left" size={30} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>Trang Chủ</Text>
+        <Text style={styles.title}>{title}</Text>
       </View>
       <Image source={userImage} style={styles.avatar} />
     </View>

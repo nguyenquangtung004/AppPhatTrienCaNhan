@@ -32,32 +32,47 @@ const ProfileModal = ({
           <TextInput
             placeholder='Họ và Tên'
             value={fullName}
-            onChangeText={setFullName}
+            onChangeText={(text) => {
+              console.log("Full Name changed:", text);
+              setFullName(text);
+            }}
             style={styles.input}
           />
           <TextInput
             placeholder='Tuổi'
             value={age}
-            onChangeText={setAge}
+            onChangeText={(text) => {
+              console.log("Age changed:", text);
+              setAge(text);
+            }}
             keyboardType='numeric'
             style={styles.input}
           />
           <TextInput
             placeholder='Giới Tính'
             value={gender}
-            onChangeText={setGender}
+            onChangeText={(text) => {
+              console.log("Gender changed:", text);
+              setGender(text);
+            }}
             style={styles.input}
           />
           <TextInput
             placeholder='Nơi ở hiện tại'
             value={address}
-            onChangeText={setAddress}
+            onChangeText={(text) => {
+              console.log("Address changed:", text);
+              setAddress(text);
+            }}
             style={styles.input}
           />
           <TextInput
             placeholder='Số điện thoại (tuỳ chọn)'
             value={phoneNumber}
-            onChangeText={setPhoneNumber}
+            onChangeText={(text) => {
+              console.log("Phone Number changed:", text);
+              setPhoneNumber(text);
+            }}
             keyboardType='numeric'
             style={styles.input}
           />
