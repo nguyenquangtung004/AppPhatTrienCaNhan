@@ -7,12 +7,12 @@ import { accelerometer, setUpdateIntervalForType, SensorTypes } from 'react-nati
 import { map, filter, debounceTime } from 'rxjs/operators';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
-import Header from '../comp/Header'; // Thêm phần nhập khẩu cho Header
+
 
 const STEP_LENGTH_KM = 0.000762; // Chiều dài trung bình của một bước chân
 const CALORIES_PER_STEP = 0.04; // Calo tiêu thụ mỗi bước
 
-const App = () => {
+const StepCounterScreen = () => {
   const [steps, setSteps] = useState(0);
   const [subscription, setSubscription] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -529,4 +529,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default StepCounterScreen;

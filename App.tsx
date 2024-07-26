@@ -8,9 +8,11 @@ import LoginApp from './src/Screen/LoginApp';
 import RegisterApp from './src/Screen/RegisterApp';
 import HomeApp from './src/Screen/HomeApp';
 import ProfileApp from './src/Screen/ProfileApp';
-import MentalManagementScreen from './src/Screen/MentalManagement'; // Import new screen component
+import MentalManagementScreen from './src/Screen/MentalManagement';
 import StepCounterScreen from './src/Screen/StepCounterScreen';
 import VideoScreen from './src/Screen/VideoScreen';
+import StatisticalScreen from './src/Screen/StatisticalScreen';
+import MakeFriendScreen from './src/Screen/MakeFriendScreen';
 
 const Stack = createNativeStackNavigator();
 

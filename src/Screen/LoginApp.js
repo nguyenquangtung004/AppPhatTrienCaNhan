@@ -1,5 +1,5 @@
-import { Alert, Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../firebaseConfig';
@@ -81,19 +81,19 @@ const LoginApp = () => {
   };
 
   return (
-    <LinearGradient colors={['#FFFFFF', '#90EE90']} style={{ height: "100%" }}>
+    <LinearGradient colors={['#ffffff', '#90EE90']} style={{ height: "100%" }}>
       <View style={styles.view_1}>
-        <Text style={{ fontSize: 35, fontWeight: 'bold', color: "black", marginTop: 80 }}>Đăng Nhập</Text>
-        <Text style={{ color: '#0DFF7D', fontSize: 30, marginTop: 5, fontWeight: 'bold' }}>Điều khoản và chính sách</Text>
+        <Text style={styles.title}>Đăng Nhập</Text>
+        <Text style={styles.subtitle}>Điều khoản và chính sách</Text>
       </View>
 
-      <View style={{ marginLeft: 20, marginRight: 20, marginTop: 80 }}>
+      <View style={styles.inputContainer}>
         <CustomTextInput
           iconName="user"
           placeholder="Nhập tài khoản"
           value={username}
           onChangeText={setUsername}
-          style={{ marginBottom: 30 }} // Thêm khoảng cách giữa tài khoản và mật khẩu
+          style={styles.textInput}
         />
         {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
         <CustomTextInput
@@ -103,13 +103,13 @@ const LoginApp = () => {
           onChangeText={setPassword}
           secureTextEntry={passwordSecure}
           onToggleSecureEntry={() => setPasswordSecure(!passwordSecure)}
-          style={{ marginBottom: 5 }} // Thêm khoảng cách giữa tài khoản và mật khẩu
+          style={styles.textInput}
         />
         {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       </View>
 
       <View style={styles.view_2}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={styles.rememberContainer}>
           <TouchableOpacity
             style={[styles.checkbox, rememberPassword && styles.checkedCheckbox]}
             onPress={handleRememberPassword}
@@ -118,11 +118,11 @@ const LoginApp = () => {
           </TouchableOpacity>
           <Text style={styles.text_function}>Ghi nhớ mật khẩu</Text>
         </View>
-        <View>
+        <TouchableOpacity>
           <Text style={styles.text_function}>Quên mật khẩu</Text>
-        </View>
+        </TouchableOpacity>
       </View>
-      
+
       <View style={styles.view_button_container}>
         <CustomButton
           text="Đăng Kí"
@@ -141,24 +141,24 @@ const LoginApp = () => {
       </View>
 
       <View style={styles.view_social_container}>
-        <Text style={{ fontSize: 30, fontWeight: "bold", color: 'black' }}>Đăng nhập với</Text>
-        <View style={{ flexDirection: 'row', marginTop: 30 }}>
-          <TouchableOpacity onPress={() => {}}>
+        <Text style={styles.socialTitle}>Đăng nhập với</Text>
+        <View style={styles.socialIconsContainer}>
+          <TouchableOpacity onPress={() => { }}>
             <Image
               source={require('../material/image/soical/facebook.png')}
-              style={{ width: 70, height: 70, marginRight: 20 }}
+              style={styles.socialIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => { }}>
             <Image
               source={require('../material/image/soical/google.png')}
-              style={{ width: 70, height: 70, marginRight: 20 }}
+              style={styles.socialIcon}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => { }}>
             <Image
               source={require('../material/image/soical/threads.png')}
-              style={{ width: 70, height: 70 }}
+              style={styles.socialIcon}
             />
           </TouchableOpacity>
         </View>
@@ -177,14 +177,41 @@ export default LoginApp;
 const styles = StyleSheet.create({
   view_1: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginTop: 80,
+  },
+  title: {
+    fontSize: 35,
+    fontWeight: 'bold',
+    color: "black",
+  },
+  subtitle: {
+    color: '#0DFF7D',
+    fontSize: 18,
+    marginTop: 5,
+    fontWeight: 'bold',
+  },
+  inputContainer: {
+    marginHorizontal: 20,
+    marginTop: 50,
+  },
+  textInput: {
+    marginBottom: 20,
+  },
+  errorText: {
+    color: 'red',
+    marginLeft: 20,
+    marginBottom: 10,
   },
   view_2: {
     flexDirection: "row",
     justifyContent: 'space-between',
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 20
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  rememberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   checkbox: {
     width: 20,
@@ -205,17 +232,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   text_function: {
-    fontSize: 25,
+    fontSize: 16,
     color: "black",
     fontWeight: "bold",
   },
   view_button_container: {
     flexDirection: 'row',
     height: 80,
-    marginTop: 10
+    marginTop: 30,
+    justifyContent: 'center',
   },
   buttonHoverLeft: {
-    backgroundColor: '#DE6B00', 
+    backgroundColor: '#DE6B00',
   },
   buttonHoverRight: {
     backgroundColor: '#DE6B00',
@@ -226,9 +254,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    margin: 20,
-    height: 80,
-    borderRadius: 10
+    margin: 10,
+    height: 50,
+    borderRadius: 10,
   },
   button_login: {
     backgroundColor: "#0DFF7D",
@@ -236,17 +264,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    margin: 20,
-    height: 80,
-    borderRadius: 10
+    margin: 10,
+    height: 50,
+    borderRadius: 10,
   },
   view_social_container: {
     alignItems: 'center',
-    marginTop: 40
+    marginTop: 40,
   },
-  errorText: {
-    color: 'red',
-    marginLeft: 20,
-    marginBottom: 10,
+  socialTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: 'black',
+  },
+  socialIconsContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  socialIcon: {
+    width: 50,
+    height: 50,
+    marginHorizontal: 10,
   },
 });

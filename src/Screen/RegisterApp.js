@@ -25,7 +25,7 @@ const RegisterApp = () => {
   const validateInputs = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    
+
     if (!username) {
       setUsernameError('Vui lòng nhập tài khoản');
       return false;
@@ -98,7 +98,7 @@ const RegisterApp = () => {
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!passwordVisibility);
   };
-  
+
   const toggleConfirmPasswordVisibility = () => {
     setConfirmPasswordVisibility(!confirmPasswordVisibility);
   };
@@ -143,7 +143,7 @@ const RegisterApp = () => {
           onTogglePasswordVisibility={toggleConfirmPasswordVisibility}
           error={confirmPasswordError}
         />
-        
+
         <AuthButtons onRegister={handleRegister} onNavigateLogin={() => navigation.navigate('Login')} />
 
         <SuccessModal visible={showSuccessModal} onDismiss={() => setShowSuccessModal(false)} />
