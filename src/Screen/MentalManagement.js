@@ -89,7 +89,7 @@ const MentalManagementScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header userImage={userImage} />
+
       <FlatList
         data={thankYouNotes}
         renderItem={renderNote}
