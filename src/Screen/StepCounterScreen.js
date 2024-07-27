@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, FlatList, ImageBackground, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, FlatList, ImageBackground, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Sound from 'react-native-sound';
 import firestore from '@react-native-firebase/firestore';
@@ -228,8 +228,7 @@ const StepCounterScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-
+    <View style={styles.container}>
       <View style={styles.metricContainer}>
         <View style={styles.metric}>
           <Image source={require('../material/image/item/steps.png')} style={styles.icon} />
@@ -301,6 +300,8 @@ const StepCounterScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.playlistSection}
         initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
       />
 
       <View style={styles.controlButtonsContainer}>
@@ -320,7 +321,7 @@ const StepCounterScreen = () => {
           <Icon name="forward" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
