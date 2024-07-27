@@ -22,19 +22,30 @@ import auth from '@react-native-firebase/auth';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = ({setScreenTitle}) => (
+interface TabNavigatorProps {
+  setScreenTitle: (title: string) => void;
+}
+
+const TabNavigator: React.FC<TabNavigatorProps> = ({setScreenTitle}) => (
   <Tab.Navigator
     screenOptions={({route}) => ({
       tabBarIcon: ({color, size}) => {
-        let iconName;
-        if (route.name === 'Home') {
-          iconName = 'home';
-        } else if (route.name === 'Make Friend') {
-          iconName = 'users';
-        } else if (route.name === 'Statistical') {
-          iconName = 'bar-chart';
-        } else if (route.name === 'Profile') {
-          iconName = 'user';
+        let iconName: string;
+        switch (route.name) {
+          case 'Home':
+            iconName = 'home';
+            break;
+          case 'Make Friend':
+            iconName = 'users';
+            break;
+          case 'Statistical':
+            iconName = 'bar-chart';
+            break;
+          case 'Profile':
+            iconName = 'user';
+            break;
+          default:
+            iconName = 'question'; // Default icon
         }
         return <Icon name={iconName} size={size} color={color} />;
       },
@@ -93,8 +104,8 @@ const TabNavigator = ({setScreenTitle}) => (
 );
 
 const App = () => {
-  const [userImage, setUserImage] = useState(null);
-  const [screenTitle, setScreenTitle] = useState('Home');
+  const [userImage, setUserImage] = useState<string | null>(null);
+  const [screenTitle, setScreenTitle] = useState<string>('Home');
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -103,8 +114,9 @@ const App = () => {
         if (user) {
           const userRef = firestore().collection('user').doc(user.uid);
           const doc = await userRef.get();
-          if (doc.exists) {
-            setUserImage(doc.data().profileImage);
+          const data = doc.data();
+          if (data) {
+            setUserImage(data.profileImage);
           } else {
             console.log('No such document!');
           }
