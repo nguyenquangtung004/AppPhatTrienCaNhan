@@ -22,7 +22,7 @@ import auth from '@react-native-firebase/auth';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => (
+const TabNavigator = ({setScreenTitle}) => (
   <Tab.Navigator
     screenOptions={({route}) => ({
       tabBarIcon: ({color, size}) => {
@@ -44,28 +44,57 @@ const TabNavigator = () => (
     <Tab.Screen
       name="Home"
       component={HomeApp}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
+      listeners={({navigation}) => ({
+        tabPress: () => {
+          setScreenTitle('Home');
+        },
+      })}
     />
     <Tab.Screen
       name="Make Friend"
       component={MakeFriendScreen}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
+      listeners={({navigation}) => ({
+        tabPress: () => {
+          setScreenTitle('Make Friend');
+        },
+      })}
     />
     <Tab.Screen
       name="Statistical"
       component={StatisticalScreen}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
+      listeners={({navigation}) => ({
+        tabPress: () => {
+          setScreenTitle('Statistical');
+        },
+      })}
     />
     <Tab.Screen
       name="Profile"
       component={ProfileApp}
-      options={{headerShown: false}}
+      options={{
+        headerShown: false,
+      }}
+      listeners={({navigation}) => ({
+        tabPress: () => {
+          setScreenTitle('Profile');
+        },
+      })}
     />
   </Tab.Navigator>
 );
 
 const App = () => {
   const [userImage, setUserImage] = useState(null);
+  const [screenTitle, setScreenTitle] = useState('Home');
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -109,17 +138,19 @@ const App = () => {
           />
           <Stack.Screen
             name="Home"
-            component={TabNavigator}
             options={{
               header: ({navigation}) => (
                 <Header
-                  title="Home"
+                  title={screenTitle}
                   navigation={navigation}
                   userImage={userImage}
                 />
               ),
-            }}
-          />
+            }}>
+            {props => (
+              <TabNavigator {...props} setScreenTitle={setScreenTitle} />
+            )}
+          </Stack.Screen>
           <Stack.Screen
             name="Profile"
             component={ProfileApp}
@@ -165,7 +196,7 @@ const App = () => {
             options={{
               header: ({navigation}) => (
                 <Header
-                  title="Music"
+                  title="Thiền Và Yoga"
                   navigation={navigation}
                   userImage={userImage}
                 />
