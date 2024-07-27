@@ -8,7 +8,7 @@ import { map, filter, debounceTime } from 'rxjs/operators';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import LinearGradient from 'react-native-linear-gradient';
 
-// Constants
+
 const STEP_LENGTH_KM = 0.000762; // Chiều dài trung bình của một bước chân
 const CALORIES_PER_STEP = 0.04; // Calo tiêu thụ mỗi bước
 
@@ -234,10 +234,10 @@ const StepCounterScreen = () => {
         <View style={styles.metric}>
           <Image source={require('../material/image/item/steps.png')} style={styles.icon} />
           <View style={styles.metricInfo}>
-            <Text style={styles.metricTitle}>Steps</Text>
+            <Text style={styles.metricTitle}>Bước Chân</Text>
             <Text style={styles.metricSubtitle}>{steps} / 10,000</Text>
           </View>
-          <Text style={styles.metricValue}>{steps}</Text>
+
         </View>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { width: `${(steps / 10000) * 100}%` }]} />
@@ -248,10 +248,10 @@ const StepCounterScreen = () => {
         <View style={styles.metric}>
           <Image source={require('../material/image/item/qd.png')} style={styles.icon} />
           <View style={styles.metricInfo}>
-            <Text style={styles.metricTitle}>Distance</Text>
+            <Text style={styles.metricTitle}>Quãng đường di chuyển</Text>
             <Text style={styles.metricSubtitle}>{distance} / 5 km</Text>
           </View>
-          <Text style={styles.metricValue}>{distance} km</Text>
+
         </View>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { width: `${(distance / 5) * 100}%` }]} />
@@ -262,10 +262,10 @@ const StepCounterScreen = () => {
         <View style={styles.metric}>
           <Image source={require('../material/image/item/calo.png')} style={styles.icon} />
           <View style={styles.metricInfo}>
-            <Text style={styles.metricTitle}>Calories</Text>
+            <Text style={styles.metricTitle}>Số calo tiêu hao</Text>
             <Text style={styles.metricSubtitle}>{calories} / 300 cal</Text>
           </View>
-          <Text style={styles.metricValue}>{calories}</Text>
+
         </View>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { width: `${(calories / 300) * 100}%` }]} />
@@ -276,10 +276,10 @@ const StepCounterScreen = () => {
         <View style={styles.metric}>
           <Image source={require('../material/image/item/time.png')} style={styles.icon} />
           <View style={styles.metricInfo}>
-            <Text style={styles.metricTitle}>Active Time</Text>
+            <Text style={styles.metricTitle}>Thời gian hoạt động</Text>
             <Text style={styles.metricSubtitle}>{`${hours}h ${minutes}m ${seconds}s`} / 60 min</Text>
           </View>
-          <Text style={styles.metricValue}>{elapsedTime}</Text>
+
         </View>
         <View style={styles.progressBarContainer}>
           <View style={[styles.progressBar, { width: `${(elapsedTime / 3600000) * 100}%` }]} />
@@ -288,7 +288,7 @@ const StepCounterScreen = () => {
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.resetButton} onPress={resetAll}>
-          <Text style={styles.buttonText}>Reset All</Text>
+          <Text style={styles.buttonText}>Cài Đặt Lại</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.startButton} onPress={toggleCounting}>
           <Text style={styles.buttonText}>{isRunning ? 'Dừng Lại' : 'Bắt Đầu'}</Text>

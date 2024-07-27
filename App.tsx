@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Provider} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -15,7 +15,9 @@ import StepCounterScreen from './src/Screen/StepCounterScreen';
 import VideoScreen from './src/Screen/VideoScreen';
 import StatisticalScreen from './src/Screen/StatisticalScreen';
 import MakeFriendScreen from './src/Screen/MakeFriendScreen';
-import CustomHeader from './src/comp/Header';
+import Header from './src/comp/Header';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,17 +40,53 @@ const TabNavigator = () => (
       },
       tabBarActiveTintColor: 'tomato',
       tabBarInactiveTintColor: 'gray',
-      headerShown: false, // Ẩn header của Tab.Navigator
     })}>
-    <Tab.Screen name="Home" component={HomeApp} />
-    <Tab.Screen name="Make Friend" component={MakeFriendScreen} />
-    <Tab.Screen name="Statistical" component={StatisticalScreen} />
-    <Tab.Screen name="Profile" component={ProfileApp} />
+    <Tab.Screen
+      name="Home"
+      component={HomeApp}
+      options={{headerShown: false}}
+    />
+    <Tab.Screen
+      name="Make Friend"
+      component={MakeFriendScreen}
+      options={{headerShown: false}}
+    />
+    <Tab.Screen
+      name="Statistical"
+      component={StatisticalScreen}
+      options={{headerShown: false}}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={ProfileApp}
+      options={{headerShown: false}}
+    />
   </Tab.Navigator>
 );
 
 const App = () => {
-  const userImage = require('./src/material/image/avatar/user_icon.png'); // Đường dẫn tới ảnh avatar mặc định
+  const [userImage, setUserImage] = useState(null);
+
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      try {
+        const user = auth().currentUser;
+        if (user) {
+          const userRef = firestore().collection('user').doc(user.uid);
+          const doc = await userRef.get();
+          if (doc.exists) {
+            setUserImage(doc.data().profileImage);
+          } else {
+            console.log('No such document!');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile image: ', error);
+      }
+    };
+
+    fetchUserImage();
+  }, []);
 
   return (
     <Provider store={store}>
@@ -74,7 +112,7 @@ const App = () => {
             component={TabNavigator}
             options={{
               header: ({navigation}) => (
-                <CustomHeader
+                <Header
                   title="Home"
                   navigation={navigation}
                   userImage={userImage}
@@ -87,7 +125,7 @@ const App = () => {
             component={ProfileApp}
             options={{
               header: ({navigation}) => (
-                <CustomHeader
+                <Header
                   title="Profile"
                   navigation={navigation}
                   userImage={userImage}
@@ -100,7 +138,7 @@ const App = () => {
             component={MentalManagementScreen}
             options={{
               header: ({navigation}) => (
-                <CustomHeader
+                <Header
                   title="Mental Management"
                   navigation={navigation}
                   userImage={userImage}
@@ -113,7 +151,7 @@ const App = () => {
             component={StepCounterScreen}
             options={{
               header: ({navigation}) => (
-                <CustomHeader
+                <Header
                   title="Step Counter"
                   navigation={navigation}
                   userImage={userImage}
@@ -126,7 +164,7 @@ const App = () => {
             component={VideoScreen}
             options={{
               header: ({navigation}) => (
-                <CustomHeader
+                <Header
                   title="Music"
                   navigation={navigation}
                   userImage={userImage}

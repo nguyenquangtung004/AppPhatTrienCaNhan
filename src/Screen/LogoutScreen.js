@@ -1,26 +1,18 @@
-// src/Screen/LogoutScreen.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button } from 'react-native';
 
 const LogoutScreen = ({ navigation }) => {
+    const handleLogout = () => {
+        // Implement your logout logic here
+        navigation.navigate('Welcome');
+    };
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>Logout Screen</Text>
-            <Button title="Go Back" onPress={() => navigation.goBack()} />
+        <View>
+            <Text>Logout Screen</Text>
+            <Button title="Logout" onPress={handleLogout} />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 20,
-        marginBottom: 20,
-    },
-});
 
 export default LogoutScreen;

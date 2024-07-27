@@ -11,7 +11,13 @@ const Header = ({ navigation, title, userImage }) => {
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
       </View>
-      <Image source={userImage} style={styles.avatar} />
+      {userImage ? (
+        <Image source={{ uri: userImage }} style={styles.avatar} />
+      ) : (
+        <View style={styles.placeholderAvatar}>
+          <Icon name="user" size={20} color="#fff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -40,6 +46,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     backgroundColor: '#ddd',
+  },
+  placeholderAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#bbb',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
