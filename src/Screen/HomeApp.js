@@ -162,7 +162,7 @@ const HomeApp = ({ navigation }) => {
         </View>
         <View>
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Screen1')}>
+            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Health')}>
               <Image source={require('../material/image/item/qltt.png')} />
             </TouchableOpacity>
             <Text style={{ fontWeight: 'bold', color: 'black' }}>Sức khỏe</Text>

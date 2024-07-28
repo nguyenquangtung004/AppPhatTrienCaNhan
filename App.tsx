@@ -18,6 +18,7 @@ import MakeFriendScreen from './src/Screen/MakeFriendScreen';
 import Header from './src/comp/Header';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import HealthScreen from './src/Screen/HealthScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -209,6 +210,19 @@ const App = () => {
               header: ({navigation}) => (
                 <Header
                   title="Thiền Và Yoga"
+                  navigation={navigation}
+                  userImage={userImage}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="Health"
+            component={HealthScreen}
+            options={{
+              header: ({navigation}) => (
+                <Header
+                  title="Health"
                   navigation={navigation}
                   userImage={userImage}
                 />
