@@ -15,10 +15,11 @@ import StepCounterScreen from './src/Screen/StepCounterScreen';
 import VideoScreen from './src/Screen/VideoScreen';
 import StatisticalScreen from './src/Screen/StatisticalScreen';
 import MakeFriendScreen from './src/Screen/MakeFriendScreen';
+import HealthScreen from './src/Screen/HealthScreen';
+import ChatScreen from './src/Screen/ChatScreen';
 import Header from './src/comp/Header';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import HealthScreen from './src/Screen/HealthScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -222,7 +223,20 @@ const App = () => {
             options={{
               header: ({navigation}) => (
                 <Header
-                  title="Health"
+                  title="Máy Tính BMI"
+                  navigation={navigation}
+                  userImage={userImage}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
+            options={{
+              header: ({navigation}) => (
+                <Header
+                  title="Chat"
                   navigation={navigation}
                   userImage={userImage}
                 />

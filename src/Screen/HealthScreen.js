@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const HealthScreen = () => {
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
     const [bmi, setBmi] = useState(null);
     const [bmiCategory, setBmiCategory] = useState('');
+    const navigation = useNavigation();
 
     const validateInputs = () => {
         const weightValue = parseFloat(weight);
@@ -43,6 +44,10 @@ const HealthScreen = () => {
         }
     };
 
+    const openChat = () => {
+        navigation.navigate('Chat');
+    };
+
     return (
         <LinearGradient colors={['#f8fafb', '#f8fafb']} style={styles.container}>
             <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -53,10 +58,6 @@ const HealthScreen = () => {
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>BMI</Text>
                     <Text style={styles.bmiValue}>{bmi !== null ? bmi : '--'}</Text>
-                    <View style={styles.bmiChange}>
-                        <Text style={styles.bmiNow}>Hiện tại</Text>
-                        <Text style={styles.bmiChangePercentage}>+5%</Text>
-                    </View>
                     <View style={styles.bmiCategoryContainer}>
                         <Text style={styles.bmiCategoryLabel}>Thiếu cân</Text>
                         <View style={styles.bmiCategoryBar}>
@@ -91,6 +92,11 @@ const HealthScreen = () => {
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={calculateBMI}>
                         <Text style={styles.buttonText}>Tính toán</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.button} onPress={openChat}>
+                        <Text style={styles.buttonText}>Bạn cần hỗ trợ ?</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
