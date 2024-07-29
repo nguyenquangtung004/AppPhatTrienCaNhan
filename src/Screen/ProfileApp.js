@@ -22,11 +22,11 @@ const ProfileScreen = () => {
           if (doc.exists) {
             setProfileData(doc.data());
           } else {
-            console.log('No such document!');
+            console.log('Không tìm thấy tài liệu!');
           }
         }
       } catch (error) {
-        console.error('Error fetching profile data: ', error);
+        console.error('Lỗi khi lấy dữ liệu hồ sơ: ', error);
       }
     };
 
@@ -55,7 +55,7 @@ const ProfileScreen = () => {
       console.log('Lỗi chọn ảnh: ', response.errorMessage);
     } else {
       const uri = response.assets[0].uri;
-      console.log('Selected Image URI: ', uri);
+      console.log('URI ảnh đã chọn: ', uri);
       const user = auth().currentUser;
 
       // Upload ảnh lên Firebase Storage
@@ -68,14 +68,14 @@ const ProfileScreen = () => {
 
       task.then(async () => {
         const downloadURL = await storageRef.getDownloadURL();
-        console.log('Download URL: ', downloadURL);
+        console.log('URL tải xuống: ', downloadURL);
 
         // Cập nhật URL ảnh trong Firestore
         await firestore().collection('user').doc(user.uid).update({ profileImage: downloadURL });
         setProfileData((prevState) => ({ ...prevState, profileImage: downloadURL }));
         Alert.alert('Thành công', 'Cập nhật ảnh đại diện thành công');
       }).catch((error) => {
-        console.error('Error uploading image: ', error);
+        console.error('Lỗi khi tải lên ảnh: ', error);
       });
     }
   };
@@ -91,14 +91,14 @@ const ProfileScreen = () => {
         Alert.alert('Thành công', 'Cập nhật thông tin cá nhân thành công');
       }
     } catch (error) {
-      console.error('Error saving profile data: ', error);
+      console.error('Lỗi khi lưu dữ liệu hồ sơ: ', error);
     }
   };
 
   if (!profileData) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text>Đang tải...</Text>
       </View>
     );
   }
@@ -174,24 +174,24 @@ const ProfileScreen = () => {
       <View style={styles.planSection}>
         {[
           {
-            title: 'How to be more confident in 30 days',
-            category: 'Mental health',
+            title: 'Làm sao để tự tin hơn trong 30 ngày',
+            category: 'Sức khỏe tinh thần',
             imageUri: 'https://cdn.usegalileo.ai/sdxl10/3fe0cb6c-9177-4bba-b3f8-eb5b7a08b5da.png',
           },
           {
-            title: '5 habits that changed my life',
-            category: 'Productivity',
+            title: '5 thói quen đã thay đổi cuộc đời tôi',
+            category: 'Năng suất',
             imageUri: 'https://cdn.usegalileo.ai/sdxl10/568d812d-e7b9-4198-9df7-d4c7f82e03b8.png',
           },
           {
-            title: 'The most powerful morning routine for success',
-            category: 'Productivity',
+            title: 'Routine buổi sáng mạnh mẽ nhất để thành công',
+            category: 'Năng suất',
             imageUri: 'https://cdn.usegalileo.ai/stability/3cafc8ab-ed42-488e-9d03-52b995772398.png',
           },
         ].map((plan, index) => (
           <View key={index} style={styles.planItem}>
             <View style={styles.planInfo}>
-              <Text style={styles.planCategory}>Growth Plan</Text>
+              <Text style={styles.planCategory}>Kế Hoạch Phát Triển</Text>
               <Text style={styles.planTitle}>{plan.title}</Text>
               <Text style={styles.planCategory}>{plan.category}</Text>
             </View>

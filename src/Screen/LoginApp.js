@@ -9,14 +9,14 @@ import CustomButton from '../comp/CustomButton';
 import CustomModal from '../comp/CustomModal';
 
 const LoginApp = () => {
-  const [username, setUsername] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordSecure, setPasswordSecure] = useState(true);
   const [rememberPassword, setRememberPassword] = useState(false);
   const [isButtonHoveredRight, setIsButtonHoveredRight] = useState(false);
   const [isButtonHoveredLeft, setIsButtonHoveredLeft] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [usernameError, setUsernameError] = useState('');
+  const [usernameOrEmailError, setUsernameOrEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation();
 
@@ -26,14 +26,14 @@ const LoginApp = () => {
   };
 
   // Xử lý khi nhấn nút "Đăng nhập"
-  const handleLogin = () => {
+  const handleLogin = async () => {
     let hasError = false;
 
-    if (!username) {
-      setUsernameError('Vui lòng nhập tài khoản');
+    if (!usernameOrEmail) {
+      setUsernameOrEmailError('Vui lòng nhập tài khoản hoặc email');
       hasError = true;
     } else {
-      setUsernameError('');
+      setUsernameOrEmailError('');
     }
 
     if (!password) {
@@ -47,35 +47,57 @@ const LoginApp = () => {
       return;
     }
 
-    auth()
-      .signInWithEmailAndPassword(username, password)
-      .then(async (userCredential) => {
-        const user = userCredential.user;
-        console.log("Đăng nhập thành công với UID:", user.uid);
+    try {
+      // Kiểm tra nếu người dùng nhập username hoặc email
+      let email = usernameOrEmail;
+      if (!usernameOrEmail.includes('@')) {
+        // Nếu không chứa ký tự '@', giả sử người dùng nhập username
+        const userQuerySnapshot = await firestore()
+          .collection('accounts')
+          .where('username', '==', usernameOrEmail)
+          .get();
+        if (!userQuerySnapshot.empty) {
+          email = userQuerySnapshot.docs[0].data().email;
+        } else {
+          setUsernameOrEmailError('Tên người dùng không tồn tại');
+          return;
+        }
+      }
 
-        // Lấy dữ liệu người dùng từ Firestore
-        try {
-          const userDoc = await firestore()
-            .collection('accounts')
-            .doc(user.uid)
-            .get();
+      // Đăng nhập với email
+      auth()
+        .signInWithEmailAndPassword(email, password)
+        .then(async (userCredential) => {
+          const user = userCredential.user;
+          console.log("Đăng nhập thành công với UID:", user.uid);
 
-          if (userDoc.exists) {
-            console.log("Dữ liệu người dùng:", userDoc.data());
-            navigation.navigate('Home');
-          } else {
-            console.log("Tài khoản không tồn tại trong Firestore");
+          // Lấy dữ liệu người dùng từ Firestore
+          try {
+            const userDoc = await firestore()
+              .collection('accounts')
+              .doc(user.uid)
+              .get();
+
+            if (userDoc.exists) {
+              console.log("Dữ liệu người dùng:", userDoc.data());
+              navigation.navigate('Home');
+            } else {
+              console.log("Tài khoản không tồn tại trong Firestore");
+              setModalVisible(true);
+            }
+          } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu người dùng:", error.message);
             setModalVisible(true);
           }
-        } catch (error) {
-          console.error("Lỗi khi lấy dữ liệu người dùng:", error.message);
+        })
+        .catch((error) => {
+          console.error("Lỗi đăng nhập:", error.message);
           setModalVisible(true);
-        }
-      })
-      .catch((error) => {
-        console.error("Lỗi đăng nhập:", error.message);
-        setModalVisible(true);
-      });
+        });
+    } catch (error) {
+      console.error("Lỗi khi tìm tài khoản:", error.message);
+      setModalVisible(true);
+    }
   };
 
   // Xử lý khi nhấn nút "Đăng ký"
@@ -93,12 +115,12 @@ const LoginApp = () => {
       <View style={styles.inputContainer}>
         <CustomTextInput
           iconName="user"
-          placeholder="Nhập tài khoản"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="Nhập tài khoản hoặc email"
+          value={usernameOrEmail}
+          onChangeText={setUsernameOrEmail}
           style={styles.textInput}
         />
-        {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+        {usernameOrEmailError ? <Text style={styles.errorText}>{usernameOrEmailError}</Text> : null}
         <CustomTextInput
           iconName="lock"
           placeholder="Nhập mật khẩu"
@@ -290,11 +312,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
-
-// Logs chi tiết:
-// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
-
-console.log("Quá trình đăng nhập bắt đầu.");
-// console.log("Tên tài khoản: ", username);
-// console.log("Mật khẩu: ", password);
-// console.log("Modal hiển thị: ", modalVisible);
