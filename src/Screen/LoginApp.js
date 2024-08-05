@@ -9,15 +9,15 @@ import CustomButton from '../comp/CustomButton';
 import CustomModal from '../comp/CustomModal';
 
 const LoginApp = () => {
-  const [usernameOrEmail, setUsernameOrEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordSecure, setPasswordSecure] = useState(true);
-  const [rememberPassword, setRememberPassword] = useState(false);
-  const [isButtonHoveredRight, setIsButtonHoveredRight] = useState(false);
-  const [isButtonHoveredLeft, setIsButtonHoveredLeft] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [usernameOrEmailError, setUsernameOrEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');// State lưu trữ tài khoản hoặc email
+  const [password, setPassword] = useState('');// State lưu trữ mật khẩu
+  const [passwordSecure, setPasswordSecure] = useState(true);// State kiểm soát hiển thị mật khẩu
+  const [rememberPassword, setRememberPassword] = useState(false);// State ghi nhớ mật khẩu
+  const [isButtonHoveredRight, setIsButtonHoveredRight] = useState(false);// State kiểm soát hover nút Đăng Nhập
+  const [isButtonHoveredLeft, setIsButtonHoveredLeft] = useState(false);// State kiểm soát hover nút Đăng Kí
+  const [modalVisible, setModalVisible] = useState(false);// State hiển thị modal
+  const [usernameOrEmailError, setUsernameOrEmailError] = useState('');// State lỗi tài khoản hoặc email
+  const [passwordError, setPasswordError] = useState(''); // State lỗi mật khẩu
   const navigation = useNavigation();
 
   // Xử lý khi nhấn nút "Ghi nhớ mật khẩu"

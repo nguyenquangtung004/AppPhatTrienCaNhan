@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {Provider} from 'react-redux';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import store from './src/redux/store';
 import WelcomeApp from './src/Screen/WelcomeApp';
@@ -28,51 +28,53 @@ interface TabNavigatorProps {
   setScreenTitle: (title: string) => void;
 }
 
-const TabNavigator: React.FC<TabNavigatorProps> = ({setScreenTitle}) => (
+const TabNavigator: React.FC<TabNavigatorProps> = ({ setScreenTitle }) => (
   <Tab.Navigator
-    screenOptions={({route}) => ({
-      tabBarIcon: ({color, size}) => {
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
         let iconName: string;
         switch (route.name) {
-          case 'Home':
+          case 'HomeTab':
             iconName = 'home';
             break;
-          case 'Make Friend':
+          case 'MakeFriend':
             iconName = 'users';
             break;
           case 'Statistical':
             iconName = 'bar-chart';
             break;
-          case 'Profile':
+          case 'ProfileTab':
             iconName = 'user';
             break;
           default:
-            iconName = 'question'; // Default icon
+            iconName = 'question';
         }
         return <Icon name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: 'tomato',
       tabBarInactiveTintColor: 'gray',
-    })}>
+    })}
+  >
     <Tab.Screen
-      name="Home"
+      name="HomeTab"
       component={HomeApp}
       options={{
         headerShown: false,
+        title: 'Home',
       }}
-      listeners={({navigation}) => ({
+      listeners={({ navigation }) => ({
         tabPress: () => {
           setScreenTitle('Home');
         },
       })}
     />
     <Tab.Screen
-      name="Make Friend"
+      name="MakeFriend"
       component={MakeFriendScreen}
       options={{
         headerShown: false,
       }}
-      listeners={({navigation}) => ({
+      listeners={({ navigation }) => ({
         tabPress: () => {
           setScreenTitle('Make Friend');
         },
@@ -84,19 +86,20 @@ const TabNavigator: React.FC<TabNavigatorProps> = ({setScreenTitle}) => (
       options={{
         headerShown: false,
       }}
-      listeners={({navigation}) => ({
+      listeners={({ navigation }) => ({
         tabPress: () => {
           setScreenTitle('Statistical');
         },
       })}
     />
     <Tab.Screen
-      name="Profile"
+      name="ProfileTab"
       component={ProfileApp}
       options={{
         headerShown: false,
+        title: 'Profile',
       }}
-      listeners={({navigation}) => ({
+      listeners={({ navigation }) => ({
         tabPress: () => {
           setScreenTitle('Profile');
         },
@@ -138,29 +141,30 @@ const App = () => {
           <Stack.Screen
             name="Welcome"
             component={WelcomeApp}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Login"
             component={LoginApp}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Register"
             component={RegisterApp}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Home"
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title={screenTitle}
                   navigation={navigation}
                   userImage={userImage}
                 />
               ),
-            }}>
+            }}
+          >
             {props => (
               <TabNavigator {...props} setScreenTitle={setScreenTitle} />
             )}
@@ -169,7 +173,7 @@ const App = () => {
             name="Profile"
             component={ProfileApp}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Profile"
                   navigation={navigation}
@@ -182,7 +186,7 @@ const App = () => {
             name="Mental"
             component={MentalManagementScreen}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Mental Management"
                   navigation={navigation}
@@ -195,7 +199,7 @@ const App = () => {
             name="Steps"
             component={StepCounterScreen}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Step Counter"
                   navigation={navigation}
@@ -208,7 +212,7 @@ const App = () => {
             name="Music"
             component={VideoScreen}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Thiền Và Yoga"
                   navigation={navigation}
@@ -221,7 +225,7 @@ const App = () => {
             name="Health"
             component={HealthScreen}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Máy Tính BMI"
                   navigation={navigation}
@@ -234,7 +238,7 @@ const App = () => {
             name="Chat"
             component={ChatScreen}
             options={{
-              header: ({navigation}) => (
+              header: ({ navigation }) => (
                 <Header
                   title="Chat"
                   navigation={navigation}

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity,Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import LottieView from 'lottie-react-native';
 
 // Component Leaderboard để hiển thị danh sách người dùng
 const Leaderboard = () => {
   const [users, setUsers] = useState([]); // State để lưu trữ danh sách người dùng
-
+  const [isFriendModalVisible, setFriendModalVisible] = useState(false); // State để kiểm soát modal hiển thị thông báo kết bạn thành công
   // useEffect để gọi hàm fetchUsers khi component được render
   useEffect(() => {
     const fetchUsers = async () => {
@@ -27,9 +28,32 @@ const Leaderboard = () => {
     fetchUsers(); // Gọi hàm fetchUsers
   }, []);
 
+   
   // Hàm xử lý khi nhấn nút thêm bạn
-  const handleAddFriend = (userId) => {
-    console.log(`Add friend with userId: ${userId}`);
+  const handleAddFriend = async (userId) => {
+    const currentUser = auth().currentUser;
+
+    if (!currentUser) {
+      console.error('User is not authenticated');
+      return;
+    }
+
+    if (currentUser.uid === userId) {
+      console.error('Cannot add yourself as a friend');
+      return;
+    }
+
+    try {
+      await firestore().collection('friends').add({
+        userId1: currentUser.uid,
+        userId2: userId,
+      });
+      console.log(`Friend added with userId: ${userId}`);
+      setFriendModalVisible(true); // Hiển thị modal kết bạn thành công
+      setTimeout(() => setFriendModalVisible(false), 3000); // Tự động đóng modal sau 3 giây
+    } catch (error) {
+      console.error('Error adding friend: ', error);
+    }
   };
 
   // Hàm render từng item trong danh sách
@@ -46,6 +70,7 @@ const Leaderboard = () => {
   );
 
   return (
+    <View>
     <FlatList
       data={users} // Dữ liệu danh sách người dùng
       renderItem={renderItem} // Hàm render item
@@ -53,6 +78,25 @@ const Leaderboard = () => {
       horizontal={true} // Hiển thị danh sách theo chiều ngang
       style={styles.container} // Áp dụng kiểu dáng cho danh sách
     />
+    <Modal
+      visible={isFriendModalVisible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setFriendModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <LottieView
+            source={require('../material/animation/succes.json')} // Đường dẫn tới file animation
+            autoPlay
+            loop={false}
+            style={styles.lottieAnimation}
+          />
+          <Text style={styles.modalText}>Kết bạn thành công!</Text>
+        </View>
+      </View>
+    </Modal>
+  </View>
   );
 };
 

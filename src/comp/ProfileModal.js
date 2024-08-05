@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, Image, Modal, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput, Image, Modal, StyleSheet, Alert } from 'react-native';
 
 // Component ProfileModal để hiển thị modal tạo hồ sơ
 const ProfileModal = ({
@@ -19,6 +19,26 @@ const ProfileModal = ({
   handleSelectImage, // Hàm để chọn ảnh hồ sơ
   handleSaveProfile // Hàm để lưu hồ sơ
 }) => {
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!fullName) newErrors.fullName = 'Vui lòng nhập họ và tên';
+    if (!age || isNaN(age) || age <= 0) newErrors.age = 'Vui lòng nhập tuổi hợp lệ';
+    if (!gender) newErrors.gender = 'Vui lòng nhập giới tính';
+    if (!address) newErrors.address = 'Vui lòng nhập nơi ở hiện tại';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSave = () => {
+    if (validate()) {
+      handleSaveProfile();
+    } else {
+      Alert.alert('Lỗi', 'Vui lòng điền tất cả các trường hợp lệ');
+    }
+  };
+
   return (
     <Modal
       animationType="slide" // Kiểu animation khi mở modal
@@ -32,47 +52,36 @@ const ProfileModal = ({
           <TextInput
             placeholder='Họ và Tên'
             value={fullName}
-            onChangeText={(text) => {
-              console.log("Full Name changed:", text);
-              setFullName(text);
-            }}
+            onChangeText={setFullName}
             style={styles.input}
           />
+          {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
           <TextInput
             placeholder='Tuổi'
             value={age}
-            onChangeText={(text) => {
-              console.log("Age changed:", text);
-              setAge(text);
-            }}
+            onChangeText={setAge}
             keyboardType='numeric'
             style={styles.input}
           />
+          {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
           <TextInput
             placeholder='Giới Tính'
             value={gender}
-            onChangeText={(text) => {
-              console.log("Gender changed:", text);
-              setGender(text);
-            }}
+            onChangeText={setGender}
             style={styles.input}
           />
+          {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
           <TextInput
             placeholder='Nơi ở hiện tại'
             value={address}
-            onChangeText={(text) => {
-              console.log("Address changed:", text);
-              setAddress(text);
-            }}
+            onChangeText={setAddress}
             style={styles.input}
           />
+          {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
           <TextInput
             placeholder='Số điện thoại (tuỳ chọn)'
             value={phoneNumber}
-            onChangeText={(text) => {
-              console.log("Phone Number changed:", text);
-              setPhoneNumber(text);
-            }}
+            onChangeText={setPhoneNumber}
             keyboardType='numeric'
             style={styles.input}
           />
@@ -82,7 +91,7 @@ const ProfileModal = ({
           {profileImage && (
             <Image source={{ uri: profileImage }} style={styles.selectedImage} />
           )}
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveProfile}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>Xác Nhận</Text>
           </TouchableOpacity>
         </View>
@@ -94,22 +103,22 @@ const ProfileModal = ({
 // Định nghĩa các kiểu dáng cho component
 const styles = StyleSheet.create({
   modalContainer: {
-    flex: 1, // Chiếm toàn bộ chiều cao của màn hình
+    flex: 1, // Chiếm toàn bộ màn hình
     justifyContent: 'center', // Căn giữa theo chiều dọc
     alignItems: 'center', // Căn giữa theo chiều ngang
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu nền đen trong suốt
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu nền với độ trong suốt
   },
   modalContent: {
     width: 300, // Chiều rộng của modal
-    backgroundColor: 'white', // Màu nền của modal
-    borderRadius: 10, // Bo tròn góc của modal
-    alignItems: 'center', // Căn giữa các thành phần theo chiều ngang
-    padding: 20, // Khoảng cách bên trong của modal
+    backgroundColor: 'white', // Màu nền của nội dung modal
+    borderRadius: 10, // Bo tròn các góc
+    alignItems: 'center', // Căn giữa theo chiều ngang
+    padding: 20, // Khoảng cách bên trong
   },
   modalTitle: {
-    fontSize: 20, // Kích thước chữ của tiêu đề modal
-    fontWeight: 'bold', // Độ đậm của chữ tiêu đề
-    marginBottom: 15, // Khoảng cách bên dưới tiêu đề
+    fontSize: 20, // Kích thước chữ
+    fontWeight: 'bold', // Độ đậm của chữ
+    marginTop: 20, // Khoảng cách phía trên
   },
   input: {
     height: 40, // Chiều cao của ô nhập liệu
@@ -123,7 +132,7 @@ const styles = StyleSheet.create({
   selectImageButton: {
     backgroundColor: '#007bff', // Màu nền của nút chọn ảnh
     padding: 10, // Khoảng cách bên trong của nút chọn ảnh
-    borderRadius: 5, // Bo tròn góc của nút chọn ảnh
+    borderRadius: 5, // Bo tròn các góc của nút chọn ảnh
     marginVertical: 10, // Khoảng cách dọc của nút chọn ảnh
   },
   selectImageButtonText: {
@@ -139,12 +148,17 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: '#28a745', // Màu nền của nút xác nhận
     padding: 10, // Khoảng cách bên trong của nút xác nhận
-    borderRadius: 5, // Bo tròn góc của nút xác nhận
+    borderRadius: 5, // Bo tròn các góc của nút xác nhận
     marginTop: 10, // Khoảng cách bên trên của nút xác nhận
   },
   saveButtonText: {
     color: 'white', // Màu chữ của nút xác nhận
     fontSize: 16, // Kích thước chữ của nút xác nhận
+  },
+  errorText: {
+    color: 'red', // Màu chữ của thông báo lỗi
+    fontSize: 14, // Kích thước chữ của thông báo lỗi
+    marginBottom: 10, // Khoảng cách bên dưới thông báo lỗi
   },
 });
 

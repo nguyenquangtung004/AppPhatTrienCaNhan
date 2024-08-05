@@ -7,6 +7,7 @@ import Header from '../comp/Header';
 import InitialModal from '../comp/InitialModal';
 import ProfileModal from '../comp/ProfileModal';
 import Leaderboard from '../comp/Leaderboard';
+import InputField from '../comp/InputField'; // Giả định rằng bạn đã tạo component InputField
 
 // Component HomeApp để hiển thị trang chủ của ứng dụng
 const HomeApp = ({ navigation }) => {
@@ -46,8 +47,8 @@ const HomeApp = ({ navigation }) => {
     setProfileModalVisible(true);
   };
 
-  // Hàm chọn ảnh từ thư viện ảnh
-  const handleSelectImage = () => {
+   // Hàm chọn ảnh từ thư viện ảnh
+   const handleSelectImage = () => {
     launchImageLibrary({}, (response) => {
       if (response.didCancel) {
         console.log('Người dùng hủy chọn ảnh');
@@ -55,14 +56,51 @@ const HomeApp = ({ navigation }) => {
         console.log('Lỗi chọn ảnh: ', response.errorMessage);
       } else {
         setProfileImage(response.assets[0].uri);
+        console.log('Ảnh hồ sơ đã chọn: ', response.assets[0].uri);
       }
     });
   };
 
+  // Hàm xác thực các đầu vào
+  const validateInputs = () => {
+    const errors = {};
+
+    if (!fullName.trim()) {
+      errors.fullName = 'Vui lòng nhập họ và tên';
+    } else if (fullName.trim().length < 3) {
+      errors.fullName = 'Họ và tên phải có ít nhất 3 ký tự';
+    }
+
+    if (!age.trim()) {
+      errors.age = 'Vui lòng nhập tuổi';
+    } else if (isNaN(age) || age <= 0) {
+      errors.age = 'Tuổi phải là một số dương';
+    }
+
+    if (!gender.trim()) {
+      errors.gender = 'Vui lòng nhập giới tính';
+    } else if (!['Nam', 'Nữ', 'Khác'].includes(gender)) {
+      errors.gender = 'Giới tính không hợp lệ';
+    }
+
+    if (!address.trim()) {
+      errors.address = 'Vui lòng nhập địa chỉ';
+    } else if (address.trim().length < 5) {
+      errors.address = 'Địa chỉ phải có ít nhất 5 ký tự';
+    }
+
+    if (phoneNumber.trim() && !/^\d{10}$/.test(phoneNumber)) {
+      errors.phoneNumber = 'Số điện thoại không hợp lệ';
+    }
+
+    return errors;
+  };
+
   // Hàm lưu hồ sơ người dùng
   const handleSaveProfile = () => {
-    if (!fullName || !age || !gender || !address) {
-      Alert.alert('Lỗi', 'Vui lòng điền tất cả các trường');
+    const errors = validateInputs();
+    if (Object.keys(errors).length > 0) {
+      Alert.alert('Lỗi', Object.values(errors).join('\n'));
       return;
     }
 
@@ -81,9 +119,11 @@ const HomeApp = ({ navigation }) => {
         Alert.alert('Thông báo', 'Hồ sơ đã được tạo thành công');
         setProfileModalVisible(false);
         setUserImage(profileImage ? { uri: profileImage } : require('../material/image/avatar/user_icon.png'));
+        console.log('Hồ sơ người dùng đã được lưu: ', { fullName, age, gender, address, phoneNumber, profileImage });
       })
       .catch(error => {
         Alert.alert('Lỗi', 'Không thể lưu hồ sơ: ' + error.message);
+        console.error('Lỗi khi lưu hồ sơ: ', error.message);
       });
   };
 
@@ -96,6 +136,7 @@ const HomeApp = ({ navigation }) => {
         const data = doc.data();
         if (data && data.url_image) {
           setBannerImage(data.url_image);
+          console.log('Ảnh banner đã được tải: ', data.url_image);
         } else {
           console.error('Không tìm thấy trường url_image trong tài liệu');
         }
@@ -110,73 +151,80 @@ const HomeApp = ({ navigation }) => {
   // Hàm xử lý khi nhấn nút chuyển màn hình
   const handlePress = (screenName) => {
     navigation.navigate(screenName);
+    console.log("Điều hướng đến màn hình: ", screenName);
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={{ flex: 1 }}>
+      {isInitialModalVisible || isProfileModalVisible ? (
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <InitialModal isVisible={isInitialModalVisible} onClose={handleCreateProfile} />
+          <ProfileModal
+            isVisible={isProfileModalVisible}
+            onClose={() => setProfileModalVisible(false)}
+            fullName={fullName}
+            setFullName={setFullName}
+            age={age}
+            setAge={setAge}
+            gender={gender}
+            setGender={setGender}
+            address={address}
+            setAddress={setAddress}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            profileImage={profileImage}
+            handleSelectImage={handleSelectImage}
+            handleSaveProfile={handleSaveProfile}
+          />
+        </View>
+      ) : (
+        <ScrollView style={styles.container}>
+          {bannerImage && (
+            <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
+          )}
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Bảng Xếp Hạng</Text>
+            <View style={{ width: "100%", height: 200, backgroundColor: '#D5F8D5', justifyContent: 'center' }}>
+              <Leaderboard />
+            </View>
+          </View>
+          <View>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Hoạt Động</Text>
+          </View>
+          <View style={styles.container_item}>
+            <View>
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Music')}>
+                  <Image source={require('../material/image/item/ty.png')} />
+                </TouchableOpacity>
+                <Text style={{ fontWeight: 'bold', color: 'black' }}>Thiền Và YoGa</Text>
+              </View>
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Mental')}>
+                  <Image source={require('../material/image/item/sk.png')} />
+                </TouchableOpacity>
+                <Text style={{ fontWeight: 'bold', color: 'black' }}>Tinh Thần</Text>
+              </View >
+            </View>
+            <View>
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Health')}>
+                  <Image source={require('../material/image/item/qltt.png')} />
+                </TouchableOpacity>
+                <Text style={{ fontWeight: 'bold', color: 'black' }}>Sức khỏe</Text>
+              </View>
 
-      {bannerImage && (
-        <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
+              <View style={{ alignItems: 'center' }}>
+                <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Steps')}>
+                  <Image source={require('../material/image/item/db.png')} />
+                </TouchableOpacity>
+                <Text style={{ fontWeight: 'bold', color: 'black' }}>Vận Động</Text>
+              </View >
+            </View>
+          </View>
+        </ScrollView>
       )}
-      <InitialModal isVisible={isInitialModalVisible} onClose={handleCreateProfile} />
-      <ProfileModal
-        isVisible={isProfileModalVisible}
-        onClose={() => setProfileModalVisible(false)}
-        fullName={fullName}
-        setFullName={setFullName}
-        age={age}
-        setAge={setAge}
-        gender={gender}
-        setGender={setGender}
-        address={address}
-        setAddress={setAddress}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
-        profileImage={profileImage}
-        handleSelectImage={handleSelectImage}
-        handleSaveProfile={handleSaveProfile}
-      />
-      <View>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Bảng Xếp Hạng</Text>
-        <View style={{ width: "100%", height: 200, backgroundColor: '#D5F8D5', justifyContent: 'center' }}>
-          <Leaderboard />
-        </View>
-      </View>
-      <View>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black', marginLeft: 10, marginTop: 10, marginBottom: 10 }}>Hoạt Động</Text>
-      </View>
-      <View style={styles.container_item}>
-        <View>
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Music')}>
-              <Image source={require('../material/image/item/ty.png')} />
-            </TouchableOpacity>
-            <Text style={{ fontWeight: 'bold', color: 'black' }}>Thiền Và YoGa</Text>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Mental')}>
-              <Image source={require('../material/image/item/sk.png')} />
-            </TouchableOpacity>
-            <Text style={{ fontWeight: 'bold', color: 'black' }}>Tinh Thần</Text>
-          </View >
-        </View>
-        <View>
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Health')}>
-              <Image source={require('../material/image/item/qltt.png')} />
-            </TouchableOpacity>
-            <Text style={{ fontWeight: 'bold', color: 'black' }}>Sức khỏe</Text>
-          </View>
-
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={[styles.button]} onPress={() => handlePress('Steps')}>
-              <Image source={require('../material/image/item/db.png')} />
-            </TouchableOpacity>
-            <Text style={{ fontWeight: 'bold', color: 'black' }}>Vận Động</Text>
-          </View >
-        </View>
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -214,12 +262,3 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 });
-
-// Logs chi tiết:
-// Log này sẽ giúp bạn kiểm tra và phát hiện lỗi nếu có.
-
-console.log("Trang chủ HomeApp đã được render.");
-// console.log("Hồ sơ người dùng hiện tại: ", { fullName, age, gender, address, phoneNumber, profileImage });
-// console.log("Ảnh banner: ", bannerImage);
-// console.log("Modal khởi tạo hồ sơ hiển thị: ", isInitialModalVisible);
-// console.log("Modal hồ sơ hiển thị: ", isProfileModalVisible);
