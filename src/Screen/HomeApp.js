@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Alert, Dimensions, Text, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -21,6 +21,7 @@ const HomeApp = ({ navigation }) => {
   const [phoneNumber, setPhoneNumber] = useState(''); // Số điện thoại người dùng
   const [profileImage, setProfileImage] = useState(null); // Ảnh hồ sơ người dùng
   const [bannerImage, setBannerImage] = useState(null); // Ảnh banner
+  const [refreshing, setRefreshing] = useState(false); // Trạng thái làm mới
 
   // useEffect để kiểm tra hồ sơ người dùng và tải ảnh banner khi component được render
   useEffect(() => {
@@ -47,8 +48,8 @@ const HomeApp = ({ navigation }) => {
     setProfileModalVisible(true);
   };
 
-   // Hàm chọn ảnh từ thư viện ảnh
-   const handleSelectImage = () => {
+  // Hàm chọn ảnh từ thư viện ảnh
+  const handleSelectImage = () => {
     launchImageLibrary({}, (response) => {
       if (response.didCancel) {
         console.log('Người dùng hủy chọn ảnh');
@@ -154,6 +155,18 @@ const HomeApp = ({ navigation }) => {
     console.log("Điều hướng đến màn hình: ", screenName);
   };
 
+  // Hàm làm mới dữ liệu
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchBannerImage(); // Tải lại ảnh banner
+      // Bạn có thể thêm các hàm khác để tải lại dữ liệu nếu cần
+    } catch (error) {
+      console.error('Lỗi khi làm mới dữ liệu: ', error);
+    }
+    setRefreshing(false);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {isInitialModalVisible || isProfileModalVisible ? (
@@ -178,7 +191,15 @@ const HomeApp = ({ navigation }) => {
           />
         </View>
       ) : (
-        <ScrollView style={styles.container}>
+        <ScrollView
+          style={styles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           {bannerImage && (
             <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
           )}
