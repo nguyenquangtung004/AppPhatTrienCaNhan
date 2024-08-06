@@ -29,16 +29,13 @@ const HealthScreen = () => {
     }, []);
 
     const validateInputs = () => {
-        const weightValue = parseFloat(weight);
-        const heightValue = parseFloat(height);
-
-        if (isNaN(weightValue) || weightValue <= 0) {
-            Alert.alert('Lỗi', 'Vui lòng nhập trọng lượng hợp lệ.');
+        if (weight.trim() === '') {
+            Alert.alert('Lỗi', 'Vui lòng nhập trọng lượng.');
             return false;
         }
 
-        if (isNaN(heightValue) || heightValue <= 0) {
-            Alert.alert('Lỗi', 'Vui lòng nhập chiều cao hợp lệ.');
+        if (height.trim() === '') {
+            Alert.alert('Lỗi', 'Vui lòng nhập chiều cao.');
             return false;
         }
 
