@@ -20,6 +20,7 @@ import ChatScreen from './src/Screen/ChatScreen';
 import Header from './src/comp/Header';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import VideoDetail from './src/Screen/VideoDetail'; 
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -215,6 +216,19 @@ const App = () => {
               header: ({ navigation }) => (
                 <Header
                   title="Thiền Và Yoga"
+                  navigation={navigation}
+                  userImage={userImage}
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="VideoDetail" // Thêm màn hình VideoDetail
+            component={VideoDetail}
+            options={{
+              header: ({ navigation }) => (
+                <Header
+                  title="Chi Tiết Video"
                   navigation={navigation}
                   userImage={userImage}
                 />
