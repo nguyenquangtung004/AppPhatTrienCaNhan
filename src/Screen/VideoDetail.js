@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Video from 'react-native-video'; // Sử dụng thư viện react-native-video để phát video
+import Video from 'react-native-video'; 
 
 const VideoDetail = ({ route }) => {
     const { video } = route.params;
