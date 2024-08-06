@@ -1,20 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, TextInput, Button, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [buttonOptions, setButtonOptions] = useState([]);
+    const [weight, setWeight] = useState('');
+    const [height, setHeight] = useState('');
+    const [bmi, setBmi] = useState(null);
 
     useEffect(() => {
-        // Tự động gửi tin nhắn khi người dùng nhấn vào nút "Message"
         const welcomeMessage = 'Chào bạn! Tôi có thể giúp gì cho bạn trong việc phát triển bản thân?';
         setMessages([{ id: Date.now(), text: welcomeMessage, sender: 'ai' }]);
         setButtonOptions([
             'Kỹ năng mềm',
             'Lập kế hoạch',
-            'Tư vấn tâm lý'
+            'Tư vấn tâm lý và sức khoẻ'
         ]);
+
+        const loadStoredData = async () => {
+            try {
+                const storedWeight = await AsyncStorage.getItem('weight');
+                const storedHeight = await AsyncStorage.getItem('height');
+                const storedBmi = await AsyncStorage.getItem('bmi');
+                if (storedWeight) setWeight(storedWeight);
+                if (storedHeight) setHeight(storedHeight);
+                if (storedBmi) setBmi(parseFloat(storedBmi));
+            } catch (error) {
+                console.error('Failed to load data from storage', error);
+            }
+        };
+        loadStoredData();
     }, []);
 
     const sendMessage = (text, sender = 'user') => {
@@ -26,7 +43,9 @@ const App = () => {
         if (sender === 'user') {
             setInputText('');
             setButtonOptions([]);
-            botResponse(text);
+            setTimeout(() => {
+                botResponse(text);
+            }, 500); // Added a slight delay for bot response
         }
     };
 
@@ -38,7 +57,7 @@ const App = () => {
             botMessage = 'Bạn muốn biết về kỹ năng mềm nào?';
         } else if (userMessage === 'Lập kế hoạch') {
             botMessage = 'Bạn muốn lập kế hoạch cho điều gì?';
-        } else if (userMessage === 'Tư vấn tâm lý') {
+        } else if (userMessage === 'Tư vấn tâm lý và sức khoẻ') {
             botMessage = 'Bạn muốn tư vấn tâm lý bằng cách nào?';
             setTimeout(() => {
                 setButtonOptions([
@@ -46,16 +65,41 @@ const App = () => {
                     'Sử dụng bot chat'
                 ]);
             }, 1000);
-        } else if (userMessage === 'Nhắn tin cho chuyên gia' && lastMessage && lastMessage.text.includes('Tư vấn tâm lý')) {
+        } else if (userMessage === 'Nhắn tin cho chuyên gia' && lastMessage && lastMessage.text.includes('Bạn muốn tư vấn tâm lý bằng cách nào')) {
             botMessage = 'Mời bạn đặt câu hỏi để cho chuyên gia trả lời.';
-        } else if (userMessage === 'Sử dụng bot chat' && lastMessage && lastMessage.text.includes('Tư vấn tâm lý')) {
-            botMessage = 'Bạn đã chọn sử dụng bot chat. Vui lòng nhập câu hỏi của bạn.';
+        } else if (userMessage === 'Sử dụng bot chat' && lastMessage && lastMessage.text.includes('Bạn muốn tư vấn tâm lý bằng cách nào')) {
+            botMessage = 'Bạn đã chọn sử dụng bot chat. Bạn muốn tư vấn về sức khỏe hay tâm lý?';
+            setTimeout(() => {
+                setButtonOptions([
+                    'Tư vấn sức khoẻ',
+                    'Tư vấn tâm lý'
+                ]);
+            }, 1000);
+        } else if (userMessage === 'Tư vấn sức khoẻ' && lastMessage && lastMessage.text.includes('Bạn muốn tư vấn về sức khỏe hay tâm lý')) {
+            if (bmi !== null) {
+                const bmiCategoryMessage = getBMICategory(bmi);
+                botMessage = `Chỉ số BMI của bạn là ${bmi.toFixed(1)}. ${bmiCategoryMessage}`;
+            } else {
+                botMessage = 'Chúng tôi không tìm thấy thông tin BMI của bạn. Vui lòng kiểm tra lại trong màn hình Health.';
+            }
         }
 
         if (botMessage !== 'Xin lỗi, tôi không hiểu bạn đang nói gì.') {
             setTimeout(() => {
                 sendMessage(botMessage, 'ai');
             }, 1000);
+        }
+    };
+
+    const getBMICategory = (bmiValue) => {
+        if (bmiValue < 18.5) {
+            return 'Bạn thuộc nhóm Thiếu cân. Hãy bổ sung dinh dưỡng và ăn nhiều bữa phụ. \nBữa sáng: Oatmeal với các loại hạt và trái cây, \nBữa trưa: Sandwich gà nướng với salad quinoa, \nBữa tối: Spaghetti với sốt marinara và thịt viên';
+        } else if (bmiValue >= 18.5 && bmiValue < 24.9) {
+            return 'Bạn thuộc nhóm Cân đối. Hãy duy trì chế độ ăn uống và lối sống lành mạnh. \nBữa sáng: Trứng chiên với rau củ, \nBữa trưa: Salad gà nướng, \nBữa tối: Cá nướng với rau củ';
+        } else if (bmiValue >= 25 && bmiValue < 29.9) {
+            return 'Bạn thuộc nhóm Thừa cân. Hãy cắt giảm calo, ăn nhiều rau xanh và tập thể dục thường xuyên. \nBữa sáng: Yogurt Hy Lạp với dâu tây, \nBữa trưa: Sandwich gà tây với bánh mì nguyên cám, \nBữa tối: Gà xào rau củ với gạo lứt';
+        } else {
+            return 'Bạn thuộc nhóm Béo phì. Hãy cắt giảm calo, ăn nhiều rau xanh và tập thể dục thường xuyên. \nBữa sáng: Omelet trứng trắng với rau củ, \nBữa trưa: Cá hồi nướng với rau củ hấp, \nBữa tối: Ức gà nướng với khoai lang';
         }
     };
 
@@ -161,4 +205,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default App;
+export default App

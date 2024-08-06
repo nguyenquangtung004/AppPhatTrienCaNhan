@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
 const HealthScreen = () => {
@@ -9,6 +10,23 @@ const HealthScreen = () => {
     const [bmi, setBmi] = useState(null);
     const [bmiCategory, setBmiCategory] = useState('');
     const navigation = useNavigation();
+
+    useEffect(() => {
+        // Load weight, height, and BMI from AsyncStorage
+        const loadStoredData = async () => {
+            try {
+                const storedWeight = await AsyncStorage.getItem('weight');
+                const storedHeight = await AsyncStorage.getItem('height');
+                const storedBmi = await AsyncStorage.getItem('bmi');
+                if (storedWeight) setWeight(storedWeight);
+                if (storedHeight) setHeight(storedHeight);
+                if (storedBmi) setBmi(storedBmi);
+            } catch (error) {
+                console.error('Failed to load weight, height, and BMI from storage', error);
+            }
+        };
+        loadStoredData();
+    }, []);
 
     const validateInputs = () => {
         const weightValue = parseFloat(weight);
@@ -32,7 +50,10 @@ const HealthScreen = () => {
             const heightInMeters = parseFloat(height) / 100; // Chuyển đổi chiều cao từ cm sang mét
             const weightValue = parseFloat(weight); // Trọng lượng đã là kg
             const bmiValue = weightValue / (heightInMeters * heightInMeters);
-            setBmi(bmiValue.toFixed(1));
+            const bmiFixed = bmiValue.toFixed(1);
+            setBmi(bmiFixed);
+
+            storeData('bmi', bmiFixed); // Lưu chỉ số BMI vào AsyncStorage
 
             if (bmiValue < 18.5) {
                 setBmiCategory('Thiếu cân');
@@ -44,8 +65,32 @@ const HealthScreen = () => {
         }
     };
 
+    const storeData = async (key, value) => {
+        try {
+            await AsyncStorage.setItem(key, value);
+        } catch (error) {
+            console.error(`Failed to save ${key} to storage`, error);
+        }
+    };
+
+    const handleWeightChange = (text) => {
+        setWeight(text);
+        storeData('weight', text);
+        calculateBMI();
+    };
+
+    const handleHeightChange = (text) => {
+        setHeight(text);
+        storeData('height', text);
+        calculateBMI();
+    };
+
     const openChat = () => {
-        navigation.navigate('Chat');
+        navigation.navigate('Chat', {
+            weight: weight,
+            height: height,
+            bmi: bmi,
+        });
     };
 
     return (
@@ -79,14 +124,14 @@ const HealthScreen = () => {
                         style={styles.input}
                         keyboardType="numeric"
                         value={weight}
-                        onChangeText={setWeight}
+                        onChangeText={handleWeightChange}
                     />
                     <TextInput
                         placeholder="Chiều cao (cm)"
                         style={styles.input}
                         keyboardType="numeric"
                         value={height}
-                        onChangeText={setHeight}
+                        onChangeText={handleHeightChange}
                     />
                 </View>
                 <View style={styles.buttonContainer}>
